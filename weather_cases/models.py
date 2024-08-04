@@ -1,14 +1,15 @@
 from typing import Optional
 from pydantic import BaseModel
 
-import pandas as pd
+from datetime import datetime
 
 
 class WeatherCase(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
-    datetime: pd.Timestamp
+    id: str
+    timestamp: datetime
     location: str
     country: str
     lat: float

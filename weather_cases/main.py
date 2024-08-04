@@ -15,4 +15,4 @@ def search_cases(q: str, limit: int) -> list[WeatherCase]:
 
 def _sort_by_score_and_date(item):
     case, score = item
-    return score, case.datetime
+    return score, case.timestamp

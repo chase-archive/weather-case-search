@@ -1,3 +1,4 @@
+import hashlib
 import re
 import pandas as pd
 
@@ -5,9 +6,18 @@ from weather_cases.models import WeatherCase
 from weather_cases.geog import get_state
 
 
+def to_checksum(row) -> str:
+    dt = row["DateTime"]
+    lat = row["lat"]
+    lon = row["lon"]
+    summary = f'{dt.isoformat()},_{'%.2f' % round(float(lat), 2)},_{'%.2f' % round(float(lon), 2)}'
+    return hashlib.md5(summary.encode()).hexdigest()
+
+
 def to_weather_case(row) -> WeatherCase:
     return WeatherCase(
-        datetime=row["DateTime"],
+        id=to_checksum(row),
+        timestamp=row["DateTime"].to_pydatetime(),
         location=row["Location"],
         country=row["Country"],
         lat=float(row["lat"]),

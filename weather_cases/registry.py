@@ -3,13 +3,13 @@ from thefuzz import process
 
 import pandas as pd
 
-from weather_cases.extract import to_searchable, to_weather_case
+from weather_cases.extract import to_checksum, to_searchable, to_weather_case
 from weather_cases.models import WeatherCase
 
 
 class WeatherCaseRegistry:
     def __init__(self):
-        self._items = []
+        self._items = {}
 
     @property
     def items(self):
@@ -17,21 +17,20 @@ class WeatherCaseRegistry:
 
     @items.setter
     def items(self, df: pd.DataFrame):
-        searchable_items = [
-            RegistryElement(
+        searchable_items = {
+            to_checksum(row): RegistryElement(
                 searchable=to_searchable(row),
                 weather_case=to_weather_case(row),
                 row=row,
             )
             for _, row in df.iterrows()
-        ]
-        searchable_items = sorted(
-            searchable_items, key=lambda elem: elem.row["DateTime"], reverse=True
-        )
+        }
         self._items = searchable_items
 
     def search(self, q: str, limit: int, min_score: int = 40):
-        found = process.extract(q, self._items, limit=limit, processor=fuzz_preprocess)
+        found = process.extract(
+            q, self._items.values(), limit=limit, processor=fuzz_preprocess
+        )
         for elem, score in found:
             if score >= min_score:
                 yield elem.weather_case, score
