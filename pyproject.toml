@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "weather_cases"
+version = "0.1.0"
+description = ""
+authors = ["Jim Tang <jim.z.tang@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pandas = "^2.2.2"
+fastapi = "^0.112.0"
+thefuzz = "^0.22.1"
+uvicorn = {version = "^0.30.5", extras = ["standard"]}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
