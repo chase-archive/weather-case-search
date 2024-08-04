@@ -7,7 +7,7 @@ app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/cases/search/")
-def search_cases(q: str, limit: int) -> list[WeatherCase]:
+def search_cases(q: str, limit: int = 5) -> list[WeatherCase]:
     items = REGISTRY.search(q)
     sorted_items = sorted(items, key=_sort_by_score_and_date, reverse=True)
     return [case.weather_case for i, (case, _) in enumerate(sorted_items) if i < limit]
