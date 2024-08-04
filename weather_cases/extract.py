@@ -6,7 +6,7 @@ from weather_cases.models import WeatherCase
 from weather_cases.geog import get_state
 
 
-def to_checksum(row) -> str:
+def to_hash(row) -> str:
     dt = row["DateTime"]
     lat = row["lat"]
     lon = row["lon"]
@@ -16,7 +16,7 @@ def to_checksum(row) -> str:
 
 def to_weather_case(row) -> WeatherCase:
     return WeatherCase(
-        id=to_checksum(row),
+        id=to_hash(row),
         timestamp=row["DateTime"].to_pydatetime(),
         location=row["Location"],
         country=row["Country"],

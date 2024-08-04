@@ -3,7 +3,7 @@ from thefuzz import process
 
 import pandas as pd
 
-from weather_cases.extract import to_checksum, to_searchable, to_weather_case
+from weather_cases.extract import to_hash, to_searchable, to_weather_case
 from weather_cases.models import WeatherCase
 
 
@@ -18,7 +18,7 @@ class WeatherCaseRegistry:
     @items.setter
     def items(self, df: pd.DataFrame):
         searchable_items = {
-            to_checksum(row): RegistryElement(
+            to_hash(row): RegistryElement(
                 searchable=to_searchable(row),
                 weather_case=to_weather_case(row),
                 row=row,
