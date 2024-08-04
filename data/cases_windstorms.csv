@@ -1,0 +1,31 @@
+DateTime,Location,Country,lat,lon,TOR,HAIL,WIND,CAT,Tags,Documentation_1,Documentation_2,Documentation_3,Notes,Outbreak
+yyyymmdd_hhmm (UTC),Town–City ST,CT,(+/-)°N,(+/-)°E,F#,cm,m/s,CAT#,"tornado, derecho, hail, supercell, etc.","Please provide up to 3 links to youtube, twitter, etc. showing photos/video, if possible) ",,,Interesting fact about this event (not necessary),Name of outbreak or hurricane (if applies)
+19910409_2200,Charleston WV,US,38.35,-81.63,*,,,,derecho,,,,,1991 West Virginia Derecho
+19930313_0600,Ocala & Altamonte Springs FL,US,29.08,-82.23,F2,,,,derecho,,,,,1993 Storm of the Century
+19940531_1900,Salt Lake City UT,US,40.76,-111.89,,,54,,derecho,,,,,1994 Great Basin Derecho
+19980531_0800,Milwaukee WI,US,43.03,-87.92,,,100,,derecho,N/A,,,,1998 Southern Great Lakes Derecho
+19990704_1700,Boundary Waters Wilderness MN,US,47.93,-91.21,,,100,,derecho,,,,,Boundary Waters / Canadian Derecho
+20010528_0100,Fort Supply OK,US,36.57,-99.57,*,,,,derecho,https://www.spc.noaa.gov/misc/AbtDerechos/casepages/may27-282001page.htm,,,,"""People Chaser"" Derecho"
+20030722_1200,Memphis TN,US,35.13,-89.97,,,102,,derecho,,,,,"2003 Mid-South Derecho (""Hurricane Elvis"")"
+20090508_1439,Mountain View MO,US,37.02,-91.74,EF2,,,,derecho,https://www.spc.noaa.gov/misc/AbtDerechos/casepages/may82009page.htm,,,,"""Super Derecho"" / ""Inland Hurricane"""
+20101026_1240,Peotone IL,US,41.33,-87.79,EF2,,,,derecho,,,,,October 2010 Bomb Cyclone
+20110405_0641,Eastman GA,US,32.14,-83.21,EF2,,,,derecho,,,,,2011 Southeast Derecho
+20110706_0208,Phoenix AZ,US,33.45,-112.07,,,,,haboob,https://www.youtube.com/watch?v=HiVwpSHKq2Y,,,,July 2011 Phoenix Haboob
+20111017_2236,Lubbock TX,US,33.58,-101.88,,,,,haboob,https://www.youtube.com/watch?v=2u50gcklmnA,,,,October 2011 Lubbock Haboob
+20120629_1854,Fort Wayne IN,US,41.06,-85.09,,,*,,derecho,https://www.weather.gov/lwx/20120629svrwx,,,,2012 North American Derecho
+20140701_0340,Lowell IN,US,41.33,-87.45,EF1,,,,derecho,,,,,"""One-Two Punch"" Derecho"
+20140704_0226,Phoenix AZ,US,33.4,-112.11,,,,,haboob,https://www.youtube.com/watch?v=33sbaT8lUq8,,,,
+20160706_2230,White Owl–Plainview SD,US,44.56,-102.35,*,"3.00""",112mph,,windstorm,,,,,
+20170307_0218,Oak Grove MO,US,39.05,-94.13,EF3,,,,derecho,,,,,March 2017 Bomb Cyclone
+20180524_0140,Brownfield TX,US,33.18,-102.29,,,,,haboob,https://cameronnixonphotography.files.wordpress.com/2018/05/20180523-202203_cjn.jpg,,,,
+20180709_0106,Dateland AZ,US,32.77,-113.53,,,,,haboob,https://www.youtube.com/watch?v=QS3VERC7WH0,,,,
+20190313_1900,Amarillo TX,US,35.21,-101.83,,,79,,wind,,,,,March 2019 Bomb Cyclone
+20200607_0027,Bear Butte/Newell SD,US,44.67,-103.71,,,,,derecho,https://cameronnixonphotography.files.wordpress.com/2021/04/20200607-004049_cjn.jpg,,,,June 2020 Rockies / Northern Plains Derecho
+20200810_1724,Cedar Rapids IA,US,41.98,-91.83,,,,,derecho,https://www.youtube.com/watch?v=pBkPichBlt8,,,,2020 Iowa & Midwest Derecho
+20211215_2326,Jefferson IA,US,41.97,-94.39,EF2,,,,derecho,,,,,December 2021 Midwest Derecho
+20210713_0033,Commerce GA,US,34.12,-83.43,,,,,shelf,https://mobile.twitter.com/CodyAlcorn/status/1414996128626511877,,,,
+20220512_2200,Sioux Falls SD,US,43.55,-96.73,,,,,derecho,,,,,2022 Midwest Derecho
+20200609_0612,Akron CO,US,40.16,-103.21,,,,,"windstorm, elevated",,,,,
+20220705_2034,Sioux Falls SD,US,43.53,-96.73,,,,,derecho,https://twitter.com/TannerCharlesMN/status/1544420880528310276?s=20&t=56ZGjnb6LSDlrH5VIqJB5w,,,"""Green Derecho""",
+20220829_2359,Lubbock–Post TX,US,33.26,-101.48,,,,,haboob,https://www.reddit.com/r/weather/comments/x1zfk3/incredible_haboob_yesterday_82922_that_traveled/,,,,
+20221203_0340,Norman OK,US,35.16,-97.41,,,,,shelf,https://twitter.com/mschn08/status/1598888444641521664,,,,

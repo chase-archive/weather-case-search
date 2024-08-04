@@ -1,0 +1,35 @@
+DateTime,Location,Country,lat,lon,TOR,HAIL,WIND,CAT,Tags,Documentation_1,Documentation_2,Documentation_3,Notes,Outbreak
+yyyymmdd_hhmm (UTC),Town–City ST,CT,(+/-)°N,(+/-)°E,F#,cm,m/s,CAT#,"tornado, derecho, hail, supercell, etc.","Please provide up to 3 links to youtube, twitter, etc. showing photos/video, if possible) ",,,Interesting fact about this event (not necessary),Name of outbreak or hurricane (if applies)
+19700904_0000,Coffeeville KS,US,37.03,-95.61,,"5.6""",,,hailstorm,,,,,World Record Heaviest Hailstone
+19790730_1700,Fort Collins CO,US,40.55,-105.07,,"4.5""",,,hailstorm,,,,,
+19810508_2000,Dallas–Fort Worth–Cedar Hill TX,US,32.59,-96.96,F2,"2.75""",,,hailstorm,,,,,
+19900711_1400,Denver CO,US,39.74,-104.98,*,"2.75""",,,hailstorm,,,,,
+19920619_1100,Wichita KS,US,37.69,-97.34,,"4.5""",,,hailstorm,,,,,
+19950506_0010,Fort Worth TX,US,32.69,-97.42,,"4.00""",,,hailstorm,,https://www.youtube.com/watch?v=LR5GyEdDC7c,,,Texas Costliest Hailstorm
+20000518_2000,Chicago–Highland Park IL,US,42.18,-87.8,,"2.75""",,,hailstorm,,,,,
+20010411_0144,Saint Louis MO,US,38.77,-90.75,F1,"2.75""",,,hailstorm,,,,,US Record Costliest Hailstorm 
+20030623_0048,Aurora NE,US,40.91,-97.8,,"7.00""",,,hailstorm,,,,,Nebraska Record Hailstone
+20070616_2349,Glasgow MT,US,48.16,-106.63,,"3.00""",89,,hailstorm,,http://formontana.net/swath.html,,,
+20090721_0414,Denver CO,US,39.76,-105.13,,"1.25""",,,hailstorm,,,,,
+20100516_2101,Oklahoma City OK,US,35.5,-97.5,,"4.25""",,,hailstorm,,,,,
+20100723_2258,Vivian SD,US,43.94,-100.34,,"8""",,,hailstorm,,https://stormandsky.com/2010-7-23,,cell (FL),World Record Hailstone
+20100915_2302,Wichita KS,US,37.6,-97.45,,"7.75""",,,hailstorm,,https://www.weather.gov/ict/event_2010gianthail,,,Kansas Record Hailstone
+20101005_2349,Phoenix–Glendale AZ,US,33.5,-112.14,,"2.5""",,,"hailstorm, anticyclonic",,https://youtu.be/k0E2gJWRFFw,,,
+20110523_2235,Gotebo OK,US,35.03,-98.76,,"6.00""",,,hailstorm,,https://www.weather.gov/oun/events-20110523-recordhail,,boundary (collision),Oklahoma Record Hailstone
+20120330_0201,McAllen TX,US,26.22,-98.2,,,,,"hailstorm, accumulating hail",,https://www.weather.gov/bro/2012event_midvalleyhailprelim,,,
+20120428_2051,Saint Louis MO,US,38.65,-90.07,,"2.00""",,,hailstorm,,,,,
+20120613_2345,Dallas TX,US,32.78,-96.78,,"2.5""",,,hailstorm,,,,,
+20130401_0138,Benavides TX,US,27.54,-98.4,,"4.25""",,,hailstorm,,,,,
+20140603_2109,Blair NE,US,41.53,-96.15,,"4.75""",91mph,,hailstorm,,https://stormandsky.com/2014-6-3,,,
+20150611_0018,Minooka IL,US,41.42,-88.33,,"4.75""",,,hailstorm,,,,,Illinois Record Hailstone
+20160413_0230,San Antonio TX,US,29.47,-98.52,,"4.5""",,,hailstorm,,https://news4sanantonio.com/news/local/san-antonio-hail-storm-of-2016-second-costliest-in-texas-history,,,
+20170508_2100,Denver CO,US,39.74,-104.99,,,,,hailstorm,,,,,Colorado Costliest Hailstorm
+20180320_0007,Cullman AL,US,34.13,-86.86,*,"5.38""",,,hailstorm,,https://www.weather.gov/hun/event_03192018_hail,,cell (FF),Alabama Record Hailstone
+20190528_2100,Asherton PA,US,40.76,-76.81,,"4.00""",,,hailstorm,,,,,
+20190605_2300,Shallowater TX,US,33.68,-102,,,,,haboob,,https://cameronnixonphotography.wordpress.com/20190605-225344_cjn/,,,
+20200327_2251,Houston MO,US,37.3,-91.86,,"4.50""",,,hailstorm,,,,,
+20200504_2301,Wayne OK,US,35,-97.06,,"3.5""",,,hailstorm,,,,boundary (zipper),
+20210429_0039,Hondo TX,US,29.35,-99.13,EF1,"6.4""",,,hailstorm,,https://www.ncdc.noaa.gov/monitoring-content/extremes/scec/reports/20210624-Texas-Hailstone.pdf,,cell (RF),Texas Record Hailstone
+20210429_0155,Norman OK,US,35.18,-97.44,,,,,hailstorm,,,,,
+20220615_0512,Kearney NE,US,40.6,-99.02,,"2.5""",79mph,,"hailstorm, accumulating hail, elevated",,,,,
+20230622_0323,Morrison CO,US,39.66,-105.2,,,,,"hailstorm, accumulating hail",,https://twitter.com/TheInsiderPaper/status/1671778858624745477,,,Red Rocks Amphitheater Hailstorm
