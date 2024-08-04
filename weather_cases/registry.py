@@ -27,13 +27,14 @@ class WeatherCaseRegistry:
         }
         self._items = searchable_items
 
-    def search(self, q: str, limit: int, min_score: int = 40):
-        found = process.extract(
-            q, self._items.values(), limit=limit, processor=fuzz_preprocess
+    def search(self, q: str, min_score: int = 50):
+        return process.extractBests(
+            q,
+            self._items.values(),
+            limit=len(self._items),
+            processor=fuzz_preprocess,
+            score_cutoff=min_score,
         )
-        for elem, score in found:
-            if score >= min_score:
-                yield elem.weather_case, score
 
 
 @dataclass

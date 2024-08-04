@@ -22,5 +22,7 @@ async def lifespan(app: FastAPI):
         if file.startswith("cases_") and file.endswith(".csv"):
             case_dfs.append(read_file(os.path.join(datadir, file)))
 
-    REGISTRY.items = pd.concat(case_dfs)
+    full_df = pd.concat(case_dfs)
+    full_df.sort_values(by=["DateTime"], ascending=False, inplace=True)
+    REGISTRY.items = full_df
     yield
