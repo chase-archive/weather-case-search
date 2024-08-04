@@ -9,7 +9,7 @@ from weather_cases.io import read_file
 from weather_cases.registry import WeatherCaseRegistry
 
 
-case_registry = WeatherCaseRegistry()
+REGISTRY = WeatherCaseRegistry()
 
 
 @asynccontextmanager
@@ -22,5 +22,5 @@ async def lifespan(app: FastAPI):
         if file.startswith("cases_") and file.endswith(".csv"):
             case_dfs.append(read_file(os.path.join(datadir, file)))
 
-    case_registry.items = pd.concat(case_dfs)
+    REGISTRY.items = pd.concat(case_dfs)
     yield
