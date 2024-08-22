@@ -10,6 +10,7 @@ from weather_cases.models import WeatherCase
 class WeatherCaseRegistry:
     def __init__(self):
         self._items = {}
+        self._items_df = pd.DataFrame()
 
     @property
     def items(self):
@@ -26,6 +27,7 @@ class WeatherCaseRegistry:
             for _, row in df.iterrows()
         }
         self._items = searchable_items
+        self._items_df = df
 
     def search(self, q: str, min_score: int = 50):
         return process.extractBests(
@@ -35,6 +37,10 @@ class WeatherCaseRegistry:
             processor=fuzz_preprocess,
             score_cutoff=min_score,
         )
+
+    def get_by_year(self, year: int):
+        cases_by_year = self._items_df[self._items_df["DateTime"].dt.year == year]
+        return [to_weather_case(row) for _, row in cases_by_year.iterrows()]
 
 
 @dataclass

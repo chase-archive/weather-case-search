@@ -6,7 +6,7 @@ from weather_cases.models import WeatherCase
 from weather_cases.geog import get_state
 
 
-def to_hash(row) -> str:
+def to_hash(row: pd.Series) -> str:
     dt = row["DateTime"]
     lat = row["lat"]
     lon = row["lon"]
@@ -14,7 +14,7 @@ def to_hash(row) -> str:
     return hashlib.md5(summary.encode()).hexdigest()
 
 
-def to_weather_case(row) -> WeatherCase:
+def to_weather_case(row: pd.Series) -> WeatherCase:
     return WeatherCase(
         id=to_hash(row),
         timestamp=row["DateTime"].to_pydatetime(),
@@ -35,7 +35,7 @@ def to_weather_case(row) -> WeatherCase:
     )
 
 
-def to_searchable(row) -> dict:
+def to_searchable(row: pd.Series) -> dict:
     ret = {}
     ret.update(**location_attrs(row))
     ret.update(**date_attrs(row))
@@ -43,7 +43,7 @@ def to_searchable(row) -> dict:
     return ret
 
 
-def location_attrs(row) -> dict:
+def location_attrs(row: pd.Series) -> dict:
     loc_cell = row["Location"]
     loc_attrs = re.split(r"[–\-&/]+", loc_cell)
     loc_attrs.append(loc_cell)
@@ -60,7 +60,7 @@ def location_attrs(row) -> dict:
     return dict(locations=loc_attrs, states=list(set(states)))
 
 
-def date_attrs(row) -> dict:
+def date_attrs(row: pd.Series) -> dict:
     # TODO: convert to local time zone at lat lon - might need an API to do that
     dt = row["DateTime"]
     ts_ctrl = pd.Timestamp(dt, tz="utc").tz_convert("America/Chicago")
@@ -73,7 +73,7 @@ def date_attrs(row) -> dict:
     }
 
 
-def misc_attrs(row) -> dict:
+def misc_attrs(row: pd.Series) -> dict:
     ef = row["TOR"]
     outbreak = row["Outbreak"]
     notes = row["Notes"]
@@ -86,12 +86,12 @@ def misc_attrs(row) -> dict:
     }
 
 
-def concat_cols(row, cols) -> str:
+def concat_cols(row: pd.Series, cols: list[str]) -> str:
     row_subset = row[cols]
     return [str(cell) for cell in row_subset if cell and str(cell).strip()]
 
 
-def to_list(row, col) -> list[str]:
+def to_list(row: pd.Series, col: str) -> list[str]:
     elem = row[col]
     if not elem:
         return []

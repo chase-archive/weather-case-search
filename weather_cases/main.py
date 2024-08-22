@@ -30,6 +30,11 @@ def get_case_by_id(case_id: str) -> WeatherCase:
         raise HTTPException(status_code=404, detail="Case not found")
 
 
+@app.get("/cases/year/{year}")
+def get_cases_by_year(year: int) -> list[WeatherCase]:
+    return REGISTRY.get_by_year(year)
+
+
 def _sort_by_score_and_date(item):
     case, score = item
     return score, case.weather_case.timestamp
