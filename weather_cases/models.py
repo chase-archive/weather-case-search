@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from datetime import datetime
 
@@ -14,11 +14,10 @@ class WeatherCase(BaseModel):
     country: str
     lat: float
     lon: float
-    tor: Optional[str]
-    hail: Optional[str]
-    wind: Optional[str]
-    cat: Optional[str]
+    mag: Optional[str] = Field(default=None)
     tags: list[str]
     outbreak: Optional[str]
     documentation: list[str]
-    notes: Optional[str]
+    event_summaries: list[str] = Field(default_factory=list)
+    # TODO: this might be rennamed something else to incorporate all the columns
+    notes: Optional[str] = Field(default=None)

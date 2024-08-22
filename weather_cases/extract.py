@@ -22,10 +22,6 @@ def to_weather_case(row: pd.Series) -> WeatherCase:
         country=row["Country"],
         lat=float(row["lat"]),
         lon=float(row["lon"]),
-        tor=row["TOR"],
-        hail=row["HAIL"],
-        wind=row["WIND"],
-        cat=row["CAT"],
         tags=to_list(row, "Tags"),
         outbreak=row["Outbreak"],
         documentation=concat_cols(
@@ -74,15 +70,22 @@ def date_attrs(row: pd.Series) -> dict:
 
 
 def misc_attrs(row: pd.Series) -> dict:
-    ef = row["TOR"]
+    # most of the EF tor information is not entered in the data, 
+    # it takes a little more effort to look that up
+    # hence this will be skipped
+    # ef = row["TOR"]
+
+    # It's hard to distinguish useful vs. not useful notes.
+    # We'll see if a column pops up that makes this useful
+    # notes = row["Notes"]
+
     outbreak = row["Outbreak"]
-    notes = row["Notes"]
 
     return {
         "tags": to_list(row, "Tags"),
-        "ef": ef,
+        # "ef": ef,
         "outbreak": outbreak,
-        "notes": notes,
+        # "notes": notes,
     }
 
 
