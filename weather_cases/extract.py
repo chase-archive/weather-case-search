@@ -89,7 +89,7 @@ def misc_attrs(row: pd.Series) -> dict:
     }
 
 
-def concat_cols(row: pd.Series, cols: list[str]) -> str:
+def concat_cols(row: pd.Series, cols: list[str]) -> list[str]:
     row_subset = row[cols]
     return [str(cell) for cell in row_subset if cell and str(cell).strip()]
 
