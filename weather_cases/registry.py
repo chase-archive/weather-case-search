@@ -29,7 +29,7 @@ class WeatherCaseRegistry:
         self._items = searchable_items
         self._items_df = df
 
-    def search(self, q: str, min_score: int = 50):
+    def search(self, q: str, min_score: int = 60):
         return process.extractBests(
             q,
             self._items.values(),
