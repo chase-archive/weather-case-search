@@ -11,6 +11,11 @@ pandas = "^2.2.2"
 fastapi = "^0.112.0"
 thefuzz = "^0.22.1"
 uvicorn = {version = "^0.30.5", extras = ["standard"]}
+xarray = "^2024.7.0"
+pydap = "^3.5"
+matplotlib = "^3.9.2"
+geojson = "^3.1.0"
+cftime = "^1.6.4"
 
 
 [build-system]
