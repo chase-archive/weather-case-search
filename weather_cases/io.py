@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 
-def read_file(file) -> pd.DataFrame:
+def read_file(file: str) -> pd.DataFrame:
     df = pd.read_csv(
         file, skiprows=[1], usecols=lambda c: "Unnamed" not in c and "Rating" not in c
     )

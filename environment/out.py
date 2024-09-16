@@ -41,28 +41,19 @@ def save_to_s3(dt: pd.Timestamp, level: int, kind: str, data: geojson.GeoJSON) -
     _to_s3(bucket, filename, gzip_data)
 
 
-def _to_s3(bucket: str, key: str, data: bytes):
+def _to_s3(bucket: str, key: str, data: bytes) -> None:
     session = boto3.session.Session()
     client = session.client(
         "s3",
-        endpoint_url=os.getenv(
-            "S3_ENDPOINT_URL"
-        ),  # Find your endpoint in the control panel, under Settings. Prepend "https://".
-        config=botocore.config.Config(
-            s3={"addressing_style": "virtual"}
-        ),  # Configures to use subdomain/virtual calling format.
-        region_name=os.getenv("S3_REGION"),  # Use the region in your endpoint.
-        aws_access_key_id=os.getenv(
-            "AWS_ACCESS_KEY_ID"
-        ),  # Access key pair. You can create access key pairs using the control panel or API.
-        aws_secret_access_key=os.getenv(
-            "AWS_SECRET_ACCESS_KEY"
-        ),  # Secret access key defined through an environment variable.
+        endpoint_url=os.getenv("S3_ENDPOINT_URL"),
+        config=botocore.config.Config(s3={"addressing_style": "virtual"}),
+        region_name=os.getenv("S3_REGION"),
+        aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+        aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
     )
 
-    # Step 3: Call the put_object command and specify the file to upload.
     client.put_object(
-        Bucket=bucket,  # The path to the directory you want to upload the object to, starting with your Space name.
-        Key=key,  # Object key, referenced whenever you want to access this file later.
-        Body=data,  # The object's contents.
+        Bucket=bucket,
+        Key=key,
+        Body=data,
     )

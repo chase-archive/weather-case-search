@@ -5,7 +5,7 @@ from environment.generate import heights, winds
 from environment.out import save_to_s3
 
 
-def run_for(event_dt: pd.Timestamp, country: str = "US", freq: str = "3H"):
+def run_for(event_dt: pd.Timestamp, country: str = "US", freq: str = "3H") -> None:
     extent = EXTENTS[country]
     if 0 <= event_dt.hour < 12:
         start_dt = (event_dt - pd.Timedelta(1, "d")).replace(hour=0, minute=0, second=0)
