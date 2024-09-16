@@ -36,7 +36,6 @@ def contour_linestrings(CS: ContourSet, digits: int = 2) -> GeoJSON:
 
         if path_feats:
             features += path_feats
-        # geojson_dict['features'] = path_feats
 
     geojson_dict["features"] = features
     return GeoJSON(geojson_dict)
@@ -71,7 +70,6 @@ def contour_polygons(CS: ContourSet, digits: int = 2) -> GeoJSON:
 
         if path_feats:
             features += path_feats
-        # geojson_dict['features'] = path_feats
 
     geojson_dict["features"] = features
     return GeoJSON(geojson_dict)
