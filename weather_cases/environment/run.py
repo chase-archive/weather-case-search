@@ -1,8 +1,8 @@
 import pandas as pd
 
-from environment.extents import EXTENTS
-from environment.generate import heights, winds
-from environment.out import save_to_s3
+from weather_cases.environment.extents import EXTENTS
+from weather_cases.environment.generate import heights, winds
+from weather_cases.environment.out import save_to_s3
 
 
 def run_for(event_dt: pd.Timestamp, country: str = "US", freq: str = "3H") -> None:
@@ -29,7 +29,7 @@ def run_for(event_dt: pd.Timestamp, country: str = "US", freq: str = "3H") -> No
 
 if __name__ == "__main__":
     run_for(
-        pd.Timestamp("1999-05-04T00:00:00"),
+        pd.Timestamp("1999-06-01T00:00:00"),
         "US",
         "3H",
     )

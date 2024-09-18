@@ -6,9 +6,13 @@ import pandas as pd
 import xarray as xr
 from geojson import GeoJSON
 
-from environment.configs import CONFIGS
-from environment.era5_rda import open_era5_dataset, CODES
-from environment.geojsons import contour_linestrings, contour_polygons, wind_vector_grid
+from weather_cases.environment.configs import CONFIGS
+from weather_cases.environment.era5_rda import open_era5_dataset, CODES
+from weather_cases.environment.geojsons import (
+    contour_linestrings,
+    contour_polygons,
+    wind_vector_grid,
+)
 
 
 def heights(
