@@ -1,11 +1,12 @@
 import pandas as pd
 
 from weather_cases.environment.extents import EXTENTS
-from weather_cases.environment.generate import heights, winds
-from weather_cases.environment.out import save_to_s3
+from weather_cases.environment.generate import heights, wind_data
+from weather_cases.environment.s3 import save_dataset, save_geojson
 
 
 def run_for(event_dt: pd.Timestamp, country: str = "US", freq: str = "3H") -> None:
+    event_id = "test2"
     extent = EXTENTS[country]
     if 0 <= event_dt.hour < 12:
         start_dt = (event_dt - pd.Timedelta(1, "d")).replace(hour=0, minute=0, second=0)
@@ -18,12 +19,11 @@ def run_for(event_dt: pd.Timestamp, country: str = "US", freq: str = "3H") -> No
     levels = (500,)
 
     for dt, level, hght_field in heights(extent, analysis_dts, levels):
-        save_to_s3(dt, level, "heights", hght_field)
+        save_geojson(event_id, dt, level, "heights", hght_field)
         print(f"Processed heights {level} hPa at {dt}")
 
-    for dt, level, isotachs, barbs in winds(extent, analysis_dts, levels):
-        save_to_s3(dt, level, "isotachs", isotachs)
-        save_to_s3(dt, level, "barbs", barbs)
+    for dt, level, wind in wind_data(extent, analysis_dts, levels):
+        save_dataset(event_id, dt, level, "wind", wind)
         print(f"Processed wind {level} hPa at {dt}")
 
 

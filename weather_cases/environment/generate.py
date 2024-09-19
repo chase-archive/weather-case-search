@@ -34,16 +34,16 @@ def heights(
         for time, pressure_level in product(valid_times, valid_levels):
             # calculate height from geopotential
             da = ds.sel(level=pressure_level, time=time).Z / 9.8065
-            da = _process_da(da)
+            da = _process_ds(da)
 
             x, y = np.meshgrid(da.longitude, da.latitude)
             CS = plt.contour(x, y, da, levels=CONFIGS[pressure_level].height_contours)
             yield time, pressure_level, contour_linestrings(CS)
 
 
-def winds(
+def wind_data(
     extent: tuple[float], times: Iterable[pd.Timestamp], pressure_levels: Iterable[int]
-) -> Iterable[tuple[pd.Timestamp, int, GeoJSON, GeoJSON]]:
+) -> Iterable[tuple[pd.Timestamp, int, xr.Dataset]]:
     unique_dates = set(time.date() for time in times)
     levels = list(set(pressure_levels))
     u_datasets = (open_era5_dataset(d, CODES["u"], subset=extent) for d in unique_dates)
@@ -58,20 +58,29 @@ def winds(
         )
         for time, pressure_level in product(valid_times, valid_levels):
             # convert to kt
-            u = u_ds.sel(level=pressure_level, time=time).U * 1.94384
-            v = v_ds.sel(level=pressure_level, time=time).V * 1.94384
-            u = _process_da(u)
-            v = _process_da(v)
+            u = u_ds.sel(level=pressure_level, time=time)
+            v = v_ds.sel(level=pressure_level, time=time)
+            u = _process_ds(u)
+            v = _process_ds(v)
 
-            x, y = np.meshgrid(u.longitude, u.latitude)
-            wspd = np.sqrt(u**2 + v**2)
-            CS = plt.contourf(x, y, wspd, levels=CONFIGS[pressure_level].isotachs)
-            yield time, pressure_level, contour_polygons(CS), wind_vector_grid(u, v)
+            final_ds = xr.merge([u, v]) * 1.94384
+            yield time, pressure_level, final_ds
 
 
-def _process_da(da: xr.DataArray) -> xr.DataArray:
-    da_processed = da.reindex(latitude=list(reversed(da.latitude)))
-    da_processed.coords["longitude"] = (
-        da_processed.coords["longitude"] + 180
+def winds(
+    extent: tuple[float], times: Iterable[pd.Timestamp], pressure_levels: Iterable[int]
+) -> Iterable[tuple[pd.Timestamp, int, GeoJSON, GeoJSON]]:
+    for time, pressure_level, ds in wind_data(extent, times, pressure_levels):
+        u, v = ds.U, ds.V
+        x, y = np.meshgrid(u.longitude, u.latitude)
+        wspd = np.sqrt(u**2 + v**2)
+        CS = plt.contourf(x, y, wspd, levels=CONFIGS[pressure_level].isotachs)
+        yield time, pressure_level, contour_polygons(CS), wind_vector_grid(u, v)
+
+
+def _process_ds(ds: xr.Dataset | xr.DataArray) -> xr.Dataset | xr.DataArray:
+    ds_processed = ds.reindex(latitude=list(reversed(ds.latitude)))
+    ds_processed.coords["longitude"] = (
+        ds_processed.coords["longitude"] + 180
     ) % 360 - 180
-    return da_processed.sortby(da_processed.longitude)
+    return ds_processed.sortby(ds_processed.longitude)
