@@ -3,7 +3,7 @@ import pandas as pd
 import xarray as xr
 from xarray.backends import PydapDataStore
 
-from weather_cases.environment.types import DateTimeLike
+from weather_cases.environment.types import DateTimeLike, Extent
 
 CODES = {
     "height": "128_129_z.ll025sc",
@@ -19,7 +19,7 @@ CODES = {
 def open_era5_dataset(
     date: DateTimeLike,
     code: str,
-    subset: tuple[float, float, float, float] | None = None,
+    subset: Extent | None = None,
     grid_spacing: float = 0.5,
     levels: list[int] | None = None,
 ) -> xr.Dataset:

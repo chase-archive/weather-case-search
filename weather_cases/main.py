@@ -1,10 +1,12 @@
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 
-from weather_cases.exceptions import DataNotFoundException
-from weather_cases.lifespan import lifespan, REGISTRY
-from weather_cases.models import WeatherCase
+from weather_cases.environment.exceptions import DataNotFoundException
+from weather_cases.lifespan import lifespan
+from weather_cases.routes import router as cases_router
+from weather_cases.environment.routes import router as environment_router
 
 app = FastAPI(lifespan=lifespan)
 
@@ -16,6 +18,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=9)
+
 
 @app.exception_handler(DataNotFoundException)
 async def data_not_found_handler(request: Request, exc: DataNotFoundException):
@@ -25,26 +29,5 @@ async def data_not_found_handler(request: Request, exc: DataNotFoundException):
     )
 
 
-@app.get("/cases/search")
-def search_cases(q: str, limit: int = 5) -> list[WeatherCase]:
-    items = REGISTRY.search(q)
-    sorted_items = sorted(items, key=_sort_by_score_and_date, reverse=True)
-    return [case.weather_case for i, (case, _) in enumerate(sorted_items) if i < limit]
-
-
-@app.get("/cases/{case_id}")
-def get_case_by_id(case_id: str) -> WeatherCase:
-    try:
-        return REGISTRY.items[case_id].weather_case
-    except KeyError:
-        raise HTTPException(status_code=404, detail="Case not found")
-
-
-@app.get("/cases/year/{year}")
-def get_cases_by_year(year: int) -> list[WeatherCase]:
-    return REGISTRY.get_by_year(year)
-
-
-def _sort_by_score_and_date(item):
-    case, score = item
-    return score, case.weather_case.timestamp
+app.include_router(cases_router)
+app.include_router(environment_router)

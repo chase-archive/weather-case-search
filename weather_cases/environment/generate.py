@@ -10,10 +10,7 @@ from weather_cases.environment.configs import CONFIGS
 from weather_cases.environment.era5_rda import open_era5_dataset, CODES
 from weather_cases.environment.geojsons import (
     contour_linestrings,
-    contour_polygons,
-    wind_vector_grid,
 )
-from weather_cases.environment.s3 import read_dataset
 from weather_cases.environment.types import Extent
 
 
@@ -69,20 +66,6 @@ def wind_data(
 
             final_ds = xr.merge([u, v]) * 1.94384
             yield time, pressure_level, final_ds
-
-
-def wind_plots(
-    event_id: str, dt: pd.Timestamp, pressure_level: int
-) -> tuple[GeoJSON, GeoJSON]:
-    ds = read_dataset(event_id, dt, pressure_level, "wind")
-
-    u, v = ds.U, ds.V
-    pressure_level = ds.level.item()
-    x, y = np.meshgrid(u.longitude, u.latitude)
-    wspd = np.sqrt(u**2 + v**2)
-
-    CS = plt.contourf(x, y, wspd, levels=CONFIGS[pressure_level].isotachs)
-    return contour_polygons(CS), wind_vector_grid(u, v)
 
 
 def _process_ds(ds: xr.Dataset | xr.DataArray) -> xr.Dataset | xr.DataArray:

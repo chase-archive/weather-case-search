@@ -75,7 +75,7 @@ def contour_polygons(CS: ContourSet, digits: int = 2) -> GeoJSON:
     return GeoJSON(geojson_dict)
 
 
-def wind_vector_grid(u: xr.DataArray, v: xr.DataArray) -> GeoJSON:
+def wind_vector_grid(u: xr.DataArray, v: xr.DataArray, digits: int = 2) -> GeoJSON:
     if u.shape != v.shape:
         raise ValueError("u and v are not the same shape")
 
@@ -104,7 +104,10 @@ def wind_vector_grid(u: xr.DataArray, v: xr.DataArray) -> GeoJSON:
         features.append(
             {
                 "type": "Feature",
-                "properties": {"wspd": wspd, "wdir": wdir},
+                "properties": {
+                    "wspd": round(wspd, digits),
+                    "wdir": round(wdir, digits),
+                },
                 "geometry": {"coordinates": [lon, lat], "type": "Point"},
             }
         )
