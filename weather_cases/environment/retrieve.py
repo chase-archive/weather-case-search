@@ -1,3 +1,6 @@
+import gzip
+from io import BytesIO
+import json
 import os
 from aiohttp import ClientSession
 from dotenv import load_dotenv
@@ -13,8 +16,6 @@ from weather_cases.environment.geojsons import (
 )
 from weather_cases.environment.s3 import read_dataset, s3_location
 from weather_cases.environment.types import DateTimeLike
-
-import time
 
 load_dotenv()
 
@@ -51,4 +52,9 @@ async def height_contours(
     async with client.get(f"{cdn_url}/{data}") as resp:
         if not resp.ok:
             return None
-        return GeoJSON(await resp.json())
+
+        gzipped_data = await resp.read()
+        with gzip.GzipFile(fileobj=BytesIO(gzipped_data)) as gz:
+            json_data = json.load(gz)
+
+        return GeoJSON(json_data)

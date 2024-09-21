@@ -22,7 +22,7 @@ async def retrieve_environment(
     event_id: str,
     timestamp: datetime,
     level: int,
-):
+) -> EnvironmentData:
     _check_level(level)
 
     async with aiohttp.ClientSession() as http_client:
