@@ -1,6 +1,8 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
+from weather_cases.exceptions import DataNotFoundException
 from weather_cases.lifespan import lifespan, REGISTRY
 from weather_cases.models import WeatherCase
 
@@ -13,6 +15,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.exception_handler(DataNotFoundException)
+async def data_not_found_handler(request: Request, exc: DataNotFoundException):
+    return JSONResponse(
+        status_code=404,
+        content={"message": "Not Found"},
+    )
 
 
 @app.get("/cases/search")

@@ -13,10 +13,14 @@ from weather_cases.environment.geojsons import (
     contour_polygons,
     wind_vector_grid,
 )
+from weather_cases.environment.s3 import read_dataset
+from weather_cases.environment.types import Extent
 
 
-def heights(
-    extent: tuple[float], times: Iterable[pd.Timestamp], pressure_levels: Iterable[int]
+def height_contours(
+    extent: Extent,
+    times: Iterable[pd.Timestamp],
+    pressure_levels: Iterable[int],
 ) -> Iterable[tuple[pd.Timestamp, int, GeoJSON]]:
     unique_dates = set(time.date() for time in times)
     levels = list(set(pressure_levels))
@@ -42,7 +46,7 @@ def heights(
 
 
 def wind_data(
-    extent: tuple[float], times: Iterable[pd.Timestamp], pressure_levels: Iterable[int]
+    extent: Extent, times: Iterable[pd.Timestamp], pressure_levels: Iterable[int]
 ) -> Iterable[tuple[pd.Timestamp, int, xr.Dataset]]:
     unique_dates = set(time.date() for time in times)
     levels = list(set(pressure_levels))
@@ -67,15 +71,18 @@ def wind_data(
             yield time, pressure_level, final_ds
 
 
-def winds(
-    extent: tuple[float], times: Iterable[pd.Timestamp], pressure_levels: Iterable[int]
-) -> Iterable[tuple[pd.Timestamp, int, GeoJSON, GeoJSON]]:
-    for time, pressure_level, ds in wind_data(extent, times, pressure_levels):
-        u, v = ds.U, ds.V
-        x, y = np.meshgrid(u.longitude, u.latitude)
-        wspd = np.sqrt(u**2 + v**2)
-        CS = plt.contourf(x, y, wspd, levels=CONFIGS[pressure_level].isotachs)
-        yield time, pressure_level, contour_polygons(CS), wind_vector_grid(u, v)
+def wind_plots(
+    event_id: str, dt: pd.Timestamp, pressure_level: int
+) -> tuple[GeoJSON, GeoJSON]:
+    ds = read_dataset(event_id, dt, pressure_level, "wind")
+
+    u, v = ds.U, ds.V
+    pressure_level = ds.level.item()
+    x, y = np.meshgrid(u.longitude, u.latitude)
+    wspd = np.sqrt(u**2 + v**2)
+
+    CS = plt.contourf(x, y, wspd, levels=CONFIGS[pressure_level].isotachs)
+    return contour_polygons(CS), wind_vector_grid(u, v)
 
 
 def _process_ds(ds: xr.Dataset | xr.DataArray) -> xr.Dataset | xr.DataArray:

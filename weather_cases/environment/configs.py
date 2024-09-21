@@ -1,13 +1,13 @@
 from dataclasses import dataclass
-
+from typing import Iterable
 import numpy as np
 
 
 @dataclass
 class Configs:
     level: int
-    height_contours: list[int] | None
-    isotachs: list[int] | None
+    height_contours: Iterable[int] | None
+    isotachs: Iterable[int] | None
 
 
 CONFIGS = {

@@ -3,11 +3,13 @@ from io import BytesIO
 import os
 import geojson
 import pandas as pd
-import boto3
-import botocore
+from boto3.session import Session
+from botocore.config import Config
 import s3fs
 import xarray as xr
 from dotenv import load_dotenv
+
+from weather_cases.exceptions import DataNotFoundException
 
 
 load_dotenv()
@@ -23,6 +25,9 @@ def save_geojson(
     event_id: str, dt: pd.Timestamp, level: int, kind: str, data: geojson.GeoJSON
 ) -> None:
     bucket = os.getenv("S3_BUCKET_NAME")
+    if bucket is None:
+        raise ValueError("S3_BUCKET_NAME is not set")
+
     filename = s3_location(event_id, dt, level, kind, "geojson.gz")
     gzip_buffer = BytesIO()
 
@@ -52,29 +57,31 @@ def save_dataset(
     s3_path = f"s3://{bucket}/{filename}"
     store = s3fs.S3Map(root=s3_path, s3=s3)
     data.to_zarr(store=store, mode="w", consolidated=True)
-    return store
 
 
 def read_dataset(event_id: str, dt: pd.Timestamp, level: int, kind: str) -> xr.Dataset:
-    bucket = os.getenv("S3_BUCKET_NAME")
-    filename = s3_location(event_id, dt, level, kind, "zarr")
+    try:
+        bucket = os.getenv("S3_BUCKET_NAME")
+        filename = s3_location(event_id, dt, level, kind, "zarr")
 
-    s3 = s3fs.S3FileSystem(
-        key=os.getenv("AWS_ACCESS_KEY_ID"),
-        secret=os.getenv("AWS_SECRET_ACCESS_KEY"),
-        endpoint_url=os.getenv("S3_ENDPOINT_URL"),
-    )
-    s3_path = f"s3://{bucket}/{filename}"
-    store = s3fs.S3Map(root=s3_path, s3=s3, check=False)
-    return xr.open_zarr(store, chunks=None)
+        s3 = s3fs.S3FileSystem(
+            key=os.getenv("AWS_ACCESS_KEY_ID"),
+            secret=os.getenv("AWS_SECRET_ACCESS_KEY"),
+            endpoint_url=os.getenv("S3_ENDPOINT_URL"),
+        )
+        s3_path = f"s3://{bucket}/{filename}"
+        store = s3fs.S3Map(root=s3_path, s3=s3, check=False)
+        return xr.open_zarr(store, chunks=None)  # type: ignore
+    except FileNotFoundError:
+        raise DataNotFoundException("Data not found")
 
 
 def _to_s3(bucket: str, key: str, data: bytes) -> None:
-    session = boto3.session.Session()
+    session = Session()
     client = session.client(
         "s3",
         endpoint_url=os.getenv("S3_ENDPOINT_URL"),
-        config=botocore.config.Config(s3={"addressing_style": "virtual"}),
+        config=Config(s3={"addressing_style": "virtual"}),
         region_name=os.getenv("S3_REGION"),
         aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
         aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),

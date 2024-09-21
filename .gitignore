@@ -168,3 +168,5 @@ cython_debug/
 *.ipynb
 docker-compose-es.yml
 .env-old
+
+.vscode

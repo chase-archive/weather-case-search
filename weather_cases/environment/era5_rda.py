@@ -1,6 +1,9 @@
 import numpy as np
 import pandas as pd
 import xarray as xr
+from xarray.backends import PydapDataStore
+
+from weather_cases.environment.types import DateTimeLike
 
 CODES = {
     "height": "128_129_z.ll025sc",
@@ -14,15 +17,15 @@ CODES = {
 
 
 def open_era5_dataset(
-    date: pd.Timestamp | str,
+    date: DateTimeLike,
     code: str,
-    subset: tuple[float] | None = None,
+    subset: tuple[float, float, float, float] | None = None,
     grid_spacing: float = 0.5,
     levels: list[int] | None = None,
 ) -> xr.Dataset:
     date = pd.Timestamp(date)
     url = generate_rda_thredds_url(date, code)
-    store = xr.backends.PydapDataStore.open(url, session=None)
+    store = PydapDataStore.open(url, session=None)
     ds = xr.open_dataset(store)
 
     subset_dict = {}

@@ -37,7 +37,7 @@ def contour_linestrings(CS: ContourSet, digits: int = 2) -> GeoJSON:
         if path_feats:
             features += path_feats
 
-    geojson_dict["features"] = features
+    geojson_dict["features"] = features  # type: ignore
     return GeoJSON(geojson_dict)
 
 
@@ -71,7 +71,7 @@ def contour_polygons(CS: ContourSet, digits: int = 2) -> GeoJSON:
         if path_feats:
             features += path_feats
 
-    geojson_dict["features"] = features
+    geojson_dict["features"] = features  # type: ignore
     return GeoJSON(geojson_dict)
 
 
@@ -96,8 +96,8 @@ def wind_vector_grid(u: xr.DataArray, v: xr.DataArray) -> GeoJSON:
 
     for lat, lon in product(lats, lons):
         try:
-            wspd = mag.sel(latitude=lat, longitude=lon).item()
-            wdir = dir.sel(latitude=lat, longitude=lon).item() * 180 / np.pi
+            wspd = mag.sel(latitude=lat, longitude=lon).item()  # type: ignore
+            wdir = dir.sel(latitude=lat, longitude=lon).item() * 180 / np.pi  # type: ignore
         except KeyError:
             continue
 
@@ -109,5 +109,5 @@ def wind_vector_grid(u: xr.DataArray, v: xr.DataArray) -> GeoJSON:
             }
         )
 
-    geojson_dict["features"] = features
+    geojson_dict["features"] = features  # type: ignore
     return GeoJSON(geojson_dict)
