@@ -1,6 +1,8 @@
+from itertools import product
 import pandas as pd
 
 from weather_cases.environment import generate
+from weather_cases.environment.configs import EventDataRequest
 from weather_cases.environment.extents import EXTENTS
 from weather_cases.environment.s3 import save_dataset, save_geojson
 
@@ -28,13 +30,18 @@ def run_for(event_dt: pd.Timestamp, country: str = "US", freq: str = "3H") -> No
     analysis_dts = pd.date_range(*find_datetime_range(event_dt), freq=freq)
     levels = (500,)
 
-    for dt, level, hght_field in generate.height_contours(extent, analysis_dts, levels):
-        save_geojson(event_id, dt, level, "heights", hght_field)
-        print(f"Processed heights {level} hPa at {dt}")
+    data_requests = [
+        EventDataRequest(event_id, dt, level)
+        for dt, level in product(analysis_dts, levels)
+    ]
 
-    for dt, level, wind in generate.wind_data(extent, analysis_dts, levels):
-        save_dataset(event_id, dt, level, "wind", wind)
-        print(f"Processed wind {level} hPa at {dt}")
+    for req, hght_field in generate.height_contours(extent, data_requests):
+        save_geojson(req, "heights", hght_field)
+        print(f"Processed heights {req.level} hPa at {req.timestamp}")
+
+    for req, wind in generate.wind_data(extent, data_requests):
+        save_dataset(req, "wind", wind)
+        print(f"Processed wind {req.level} hPa at {req.timestamp}")
 
 
 if __name__ == "__main__":

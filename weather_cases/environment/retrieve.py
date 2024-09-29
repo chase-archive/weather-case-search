@@ -9,13 +9,13 @@ import numpy as np
 import pandas as pd
 from geojson import GeoJSON
 
-from weather_cases.environment.configs import CONFIGS
+from weather_cases.environment.configs import CONFIGS, EventDataRequest
 from weather_cases.environment.contours import get_contours
 from weather_cases.environment.geojsons import (
     contour_polygons,
     wind_vector_grid,
 )
-from weather_cases.environment.s3 import read_dataset, s3_location
+from weather_cases.environment.s3 import read_dataset
 from weather_cases.environment.types import DateTimeLike
 
 load_dotenv()
@@ -24,8 +24,8 @@ load_dotenv()
 async def wind_plots(
     event_id: str, dt: DateTimeLike, pressure_level: int
 ) -> tuple[GeoJSON, GeoJSON]:
-    dt = pd.Timestamp(dt)
-    ds = read_dataset(event_id, dt, pressure_level, "wind")
+    data_request = EventDataRequest(event_id, pd.Timestamp(dt), pressure_level)
+    ds = read_dataset(data_request, "wind")
 
     u, v = ds.U, ds.V
     # eager load to avoid network round-trips, we will be using all coordinates
@@ -48,10 +48,10 @@ async def height_contours(
     if not cdn_url:
         raise ValueError("CDN is not set")
 
-    dt = pd.Timestamp(dt)
-    data = s3_location(event_id, dt, pressure_level, "heights", "geojson.gz")
+    data_request = EventDataRequest(event_id, pd.Timestamp(dt), pressure_level)
+    data_path = data_request.to_s3_location("heights", "geojson.gz")
 
-    async with client.get(f"{cdn_url}/{data}") as resp:
+    async with client.get(f"{cdn_url}/{data_path}") as resp:
         if not resp.ok:
             return None
 

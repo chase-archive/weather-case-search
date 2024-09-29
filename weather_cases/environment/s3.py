@@ -2,13 +2,13 @@ import gzip
 from io import BytesIO
 import os
 import geojson
-import pandas as pd
 from boto3.session import Session
 from botocore.config import Config
 import s3fs
 import xarray as xr
 from dotenv import load_dotenv
 
+from weather_cases.environment.configs import EventDataRequest
 from weather_cases.environment.exceptions import DataNotFoundException
 from weather_cases.environment.types import XArrayData
 
@@ -16,68 +16,47 @@ from weather_cases.environment.types import XArrayData
 load_dotenv()
 
 
-def s3_location(
-    event_id: str, dt: pd.Timestamp, level: int, kind: str, filetype: str
-) -> str:
-    return f"{event_id}/{dt:%Y-%m-%d}/{dt:%H}/{level}/{kind}.{filetype}"
+S3_FILE_SYSTEM = s3fs.S3FileSystem(
+    key=os.getenv("AWS_ACCESS_KEY_ID"),
+    secret=os.getenv("AWS_SECRET_ACCESS_KEY"),
+    endpoint_url=os.getenv("S3_ENDPOINT_URL"),
+)
 
 
 def save_geojson(
-    event_id: str, dt: pd.Timestamp, level: int, kind: str, data: geojson.GeoJSON
+    data_request: EventDataRequest, kind: str, data: geojson.GeoJSON
 ) -> None:
-    bucket = os.getenv("S3_BUCKET_NAME")
-    if bucket is None:
-        raise ValueError("S3_BUCKET_NAME is not set")
-
-    filename = s3_location(event_id, dt, level, kind, "geojson.gz")
     gzip_buffer = BytesIO()
+    filename = data_request.to_s3_location(kind, "geojson.gz")
 
     with gzip.GzipFile(mode="w", fileobj=gzip_buffer) as gz_file:
         geojson_str = geojson.dumps(data)
         gz_file.write(geojson_str.encode("utf-8"))
 
     gzip_data = gzip_buffer.getvalue()
-    _to_s3(bucket, filename, gzip_data)
+    _write_s3_obj(filename, gzip_data)
 
 
 def save_dataset(
-    event_id: str,
-    dt: pd.Timestamp,
-    level: int,
+    data_request: EventDataRequest,
     kind: str,
     data: XArrayData,
 ) -> None:
-    bucket = os.getenv("S3_BUCKET_NAME")
-    filename = s3_location(event_id, dt, level, kind, "zarr")
-
-    s3 = s3fs.S3FileSystem(
-        key=os.getenv("AWS_ACCESS_KEY_ID"),
-        secret=os.getenv("AWS_SECRET_ACCESS_KEY"),
-        endpoint_url=os.getenv("S3_ENDPOINT_URL"),
-    )
-    s3_path = f"s3://{bucket}/{filename}"
-    store = s3fs.S3Map(root=s3_path, s3=s3)
+    s3_path = data_request.full_s3_location_path(kind, "zarr")
+    store = s3fs.S3Map(root=s3_path, s3=S3_FILE_SYSTEM)
     data.to_zarr(store=store, mode="w", consolidated=True)
 
 
-def read_dataset(event_id: str, dt: pd.Timestamp, level: int, kind: str) -> xr.Dataset:
+def read_dataset(data_request: EventDataRequest, kind: str) -> xr.Dataset:
     try:
-        bucket = os.getenv("S3_BUCKET_NAME")
-        filename = s3_location(event_id, dt, level, kind, "zarr")
-
-        s3 = s3fs.S3FileSystem(
-            key=os.getenv("AWS_ACCESS_KEY_ID"),
-            secret=os.getenv("AWS_SECRET_ACCESS_KEY"),
-            endpoint_url=os.getenv("S3_ENDPOINT_URL"),
-        )
-        s3_path = f"s3://{bucket}/{filename}"
-        store = s3fs.S3Map(root=s3_path, s3=s3, check=False)
+        s3_path = data_request.full_s3_location_path(kind, "zarr")
+        store = s3fs.S3Map(root=s3_path, s3=S3_FILE_SYSTEM, check=False)
         return xr.open_zarr(store, chunks=None)  # type: ignore
     except FileNotFoundError:
         raise DataNotFoundException("Data not found")
 
 
-def _to_s3(bucket: str, key: str, data: bytes) -> None:
+def _write_s3_obj(key: str, data: bytes) -> None:
     session = Session()
     client = session.client(
         "s3",
@@ -89,7 +68,7 @@ def _to_s3(bucket: str, key: str, data: bytes) -> None:
     )
 
     client.put_object(
-        Bucket=bucket,
+        Bucket=os.getenv("S3_BUCKET_NAME"),
         Key=key,
         Body=data,
         ACL="public-read",
