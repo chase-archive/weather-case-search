@@ -10,6 +10,7 @@ import xarray as xr
 from dotenv import load_dotenv
 
 from weather_cases.environment.exceptions import DataNotFoundException
+from weather_cases.environment.types import XArrayData
 
 
 load_dotenv()
@@ -44,7 +45,7 @@ def save_dataset(
     dt: pd.Timestamp,
     level: int,
     kind: str,
-    data: xr.Dataset | xr.DataArray,
+    data: XArrayData,
 ) -> None:
     bucket = os.getenv("S3_BUCKET_NAME")
     filename = s3_location(event_id, dt, level, kind, "zarr")
@@ -91,4 +92,5 @@ def _to_s3(bucket: str, key: str, data: bytes) -> None:
         Bucket=bucket,
         Key=key,
         Body=data,
+        ACL="public-read",
     )

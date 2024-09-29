@@ -10,6 +10,7 @@ import pandas as pd
 from geojson import GeoJSON
 
 from weather_cases.environment.configs import CONFIGS
+from weather_cases.environment.contours import get_contours
 from weather_cases.environment.geojsons import (
     contour_polygons,
     wind_vector_grid,
@@ -35,7 +36,8 @@ async def wind_plots(
     x, y = np.meshgrid(u.longitude, u.latitude)
     wspd = np.sqrt(u**2 + v**2)
 
-    CS = plt.contourf(x, y, wspd, levels=CONFIGS[pressure_level].isotachs)
+    isotach_levels = get_contours(CONFIGS[pressure_level].isotachs, wspd)
+    CS = plt.contourf(x, y, wspd, levels=isotach_levels)
     return contour_polygons(CS), wind_vector_grid(u, v)
 
 

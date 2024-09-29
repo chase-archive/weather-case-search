@@ -7,11 +7,11 @@ import xarray as xr
 from geojson import GeoJSON
 
 from weather_cases.environment.configs import CONFIGS
+from weather_cases.environment.contours import get_contours
 from weather_cases.environment.era5_rda import open_era5_dataset, CODES
-from weather_cases.environment.geojsons import (
-    contour_linestrings,
-)
-from weather_cases.environment.types import Extent
+from weather_cases.environment.geojsons import contour_linestrings
+
+from weather_cases.environment.types import Extent, XArrayData
 
 
 def height_contours(
@@ -38,7 +38,8 @@ def height_contours(
             da = _process_ds(da)
 
             x, y = np.meshgrid(da.longitude, da.latitude)
-            CS = plt.contour(x, y, da, levels=CONFIGS[pressure_level].height_contours)
+            contour_levels = get_contours(CONFIGS[pressure_level].height_contours, da)  # type: ignore
+            CS = plt.contour(x, y, da, levels=contour_levels)
             yield time, pressure_level, contour_linestrings(CS)
 
 
@@ -68,7 +69,7 @@ def wind_data(
             yield time, pressure_level, final_ds
 
 
-def _process_ds(ds: xr.Dataset | xr.DataArray) -> xr.Dataset | xr.DataArray:
+def _process_ds(ds: XArrayData) -> XArrayData:
     ds_processed = ds.reindex(latitude=list(reversed(ds.latitude)))
     ds_processed.coords["longitude"] = (
         ds_processed.coords["longitude"] + 180

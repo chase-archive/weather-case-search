@@ -14,7 +14,7 @@ router = APIRouter(prefix="/environment", tags=["environment"])
 
 def _check_level(level: int):
     if level not in CONFIGS:
-        raise HTTPException(status_code=400, detail="No data for level")
+        raise HTTPException(status_code=404, detail="No data for level")
 
 
 @router.get("/data/{event_id}/{timestamp}/{level}")
