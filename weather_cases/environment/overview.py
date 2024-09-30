@@ -1,4 +1,4 @@
-import asyncio
+from collections.abc import Iterable
 import pandas as pd
 
 from weather_cases.environment.configs import EventDataRequest
@@ -25,7 +25,7 @@ def find_datetime_range(event_dt: pd.Timestamp) -> tuple[pd.Timestamp, pd.Timest
     return start_dt, start_dt + pd.Timedelta(21, "hours")
 
 
-async def event_available_data(event_id: str) -> list[EnvironmentDataOverview]:
+def event_available_data(event_id: str) -> list[EnvironmentDataOverview]:
     try:
         event_dt = REGISTRY.items[event_id].weather_case.timestamp
     except KeyError:
@@ -33,32 +33,35 @@ async def event_available_data(event_id: str) -> list[EnvironmentDataOverview]:
     start_dt, end_dt = find_datetime_range(pd.Timestamp(event_dt))
     event_dts = pd.date_range(start_dt, end_dt, freq="3H")
 
-    promises = tuple(get_available_vars(event_id, timestamp) for timestamp in event_dts)
-    ret = await asyncio.gather(*promises)
-    return list(ret)
+    return get_available_vars(event_id, event_dts)
 
 
-async def get_available_vars(
-    event_id: str, timestamp: pd.Timestamp
-) -> EnvironmentDataOverview:
+def get_available_vars(
+    event_id: str, timestamps: Iterable[pd.Timestamp]
+) -> list[EnvironmentDataOverview]:
     levels = [200, 300, 500, 700, 850, "sfc"]
-    outputs: dict[Level, list[OutputVar]] = {}
+    ret = []
 
-    for level in levels:
-        outputs_for_level = []
-        req = EventDataRequest(event_id, timestamp, level)
-        try:
-            items = set(f"s3://{k}" for k in keys(req))
-        except FileNotFoundError:
-            items = set()
+    try:
+        items = set(f"s3://{k}" for k in keys(event_id))
+    except FileNotFoundError:
+        items = set()
 
-        if req.full_s3_location_path("heights", "geojson.gz") in items:
-            outputs_for_level.append("heights")
+    for timestamp in timestamps:
+        outputs: dict[Level, list[OutputVar]] = {}
+        for level in levels:
+            outputs_for_level = []
+            req = EventDataRequest(event_id, timestamp, level)
 
-        if req.full_s3_location_path("wind", "zarr") in items:
-            outputs_for_level.append("barbs")
-            outputs_for_level.append("isotachs")
+            if req.full_s3_location_path("heights", "geojson.gz") in items:
+                outputs_for_level.append("heights")
 
-        outputs[level] = outputs_for_level
+            if req.full_s3_location_path("wind", "zarr") in items:
+                outputs_for_level.append("barbs")
+                outputs_for_level.append("isotachs")
 
-    return EnvironmentDataOverview(timestamp=timestamp, available_data=outputs)
+            outputs[level] = outputs_for_level
+
+        ret.append(EnvironmentDataOverview(timestamp=timestamp, available_data=outputs))
+
+    return ret

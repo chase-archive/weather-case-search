@@ -28,9 +28,9 @@ def exists(data_request: EventDataRequest, kind: str, datatype: str) -> bool:
     return S3_FILE_SYSTEM.exists(s3_path)
 
 
-def keys(data_request: EventDataRequest) -> list[str]:
-    s3_path = data_request.full_s3_folder_path()
-    return [item["Key"] for item in S3_FILE_SYSTEM.listdir(s3_path)]
+def keys(event_id: str) -> list[str]:
+    folder_path = f"{os.getenv('S3_BUCKET_NAME')}/{event_id}"
+    return S3_FILE_SYSTEM.glob(f"s3://{folder_path}/**")  # type: ignore
 
 
 def save_geojson(

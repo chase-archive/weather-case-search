@@ -19,8 +19,8 @@ def _check_level(level: Level) -> None:
 
 
 @router.get("/overview/{event_id}")
-async def retrieve_environment_overview(event_id: str) -> list[EnvironmentDataOverview]:
-    return await event_available_data(event_id)
+def retrieve_environment_overview(event_id: str) -> list[EnvironmentDataOverview]:
+    return event_available_data(event_id)
 
 
 @router.get("/data/{event_id}/{timestamp}/{level}")
