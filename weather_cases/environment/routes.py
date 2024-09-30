@@ -3,25 +3,31 @@ from datetime import datetime
 import aiohttp
 from fastapi import APIRouter, HTTPException
 
-
 from weather_cases.environment import retrieve
 from weather_cases.environment.configs import CONFIGS
-from weather_cases.environment.models import EnvironmentData
+from weather_cases.environment.models import EnvironmentData, EnvironmentDataOverview
+from weather_cases.environment.overview import event_available_data
+from weather_cases.environment.types import Level
 
 
 router = APIRouter(prefix="/environment", tags=["environment"])
 
 
-def _check_level(level: int):
+def _check_level(level: Level) -> None:
     if level not in CONFIGS:
         raise HTTPException(status_code=404, detail="No data for level")
+
+
+@router.get("/overview/{event_id}")
+async def retrieve_environment_overview(event_id: str) -> list[EnvironmentDataOverview]:
+    return await event_available_data(event_id)
 
 
 @router.get("/data/{event_id}/{timestamp}/{level}")
 async def retrieve_environment(
     event_id: str,
     timestamp: datetime,
-    level: int,
+    level: Level,
 ) -> EnvironmentData:
     _check_level(level)
 

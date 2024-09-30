@@ -1,0 +1,64 @@
+import asyncio
+import pandas as pd
+
+from weather_cases.environment.configs import EventDataRequest
+from weather_cases.environment.models import EnvironmentDataOverview
+from weather_cases.environment.s3 import keys
+from weather_cases.environment.types import Level, OutputVar
+from weather_cases.lifespan import REGISTRY
+
+
+def find_datetime_range(event_dt: pd.Timestamp) -> tuple[pd.Timestamp, pd.Timestamp]:
+    if 0 <= event_dt.hour < 6:
+        start_dt = (event_dt - pd.Timedelta(1, "d")).replace(
+            hour=12, minute=0, second=0
+        )
+    elif 6 <= event_dt.hour < 12:
+        start_dt = (event_dt - pd.Timedelta(1, "d")).replace(
+            hour=18, minute=0, second=0
+        )
+    elif 18 <= event_dt.hour < 24:
+        start_dt = event_dt.replace(hour=12, minute=0, second=0)
+    else:
+        start_dt = event_dt.replace(hour=0, minute=0, second=0)
+
+    return start_dt, start_dt + pd.Timedelta(21, "hours")
+
+
+async def event_available_data(event_id: str) -> list[EnvironmentDataOverview]:
+    try:
+        event_dt = REGISTRY.items[event_id].weather_case.timestamp
+    except KeyError:
+        return []
+    start_dt, end_dt = find_datetime_range(pd.Timestamp(event_dt))
+    event_dts = pd.date_range(start_dt, end_dt, freq="3H")
+
+    promises = tuple(get_available_vars(event_id, timestamp) for timestamp in event_dts)
+    ret = await asyncio.gather(*promises)
+    return list(ret)
+
+
+async def get_available_vars(
+    event_id: str, timestamp: pd.Timestamp
+) -> EnvironmentDataOverview:
+    levels = [200, 300, 500, 700, 850, "sfc"]
+    outputs: dict[Level, list[OutputVar]] = {}
+
+    for level in levels:
+        outputs_for_level = []
+        req = EventDataRequest(event_id, timestamp, level)
+        try:
+            items = set(f"s3://{k}" for k in keys(req))
+        except FileNotFoundError:
+            items = set()
+
+        if req.full_s3_location_path("heights", "geojson.gz") in items:
+            outputs_for_level.append("heights")
+
+        if req.full_s3_location_path("wind", "zarr") in items:
+            outputs_for_level.append("barbs")
+            outputs_for_level.append("isotachs")
+
+        outputs[level] = outputs_for_level
+
+    return EnvironmentDataOverview(timestamp=timestamp, available_data=outputs)

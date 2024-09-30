@@ -1,16 +1,12 @@
 import numpy as np
 import xarray as xr
 
-
 from collections.abc import Callable, Iterable
 
-from weather_cases.environment.types import ContourSpec
+from weather_cases.environment.types import ContourCalculation, ContourSpec
 
 
-def get_contour_calc(
-    include: float, delta: float
-) -> Callable[[xr.DataArray], Iterable[float]]:
-
+def get_contour_calc(include: float, delta: float) -> ContourCalculation:
     def _calculate(da: xr.DataArray) -> Iterable[float]:
         modulo = include % delta
         da_min = da.min().item()

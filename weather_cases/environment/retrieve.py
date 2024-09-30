@@ -16,13 +16,13 @@ from weather_cases.environment.geojsons import (
     wind_vector_grid,
 )
 from weather_cases.environment.s3 import read_dataset
-from weather_cases.environment.types import DateTimeLike
+from weather_cases.environment.types import DateTimeLike, Level
 
 load_dotenv()
 
 
 async def wind_plots(
-    event_id: str, dt: DateTimeLike, pressure_level: int
+    event_id: str, dt: DateTimeLike, pressure_level: Level
 ) -> tuple[GeoJSON, GeoJSON]:
     data_request = EventDataRequest(event_id, pd.Timestamp(dt), pressure_level)
     ds = read_dataset(data_request, "wind")
@@ -42,7 +42,7 @@ async def wind_plots(
 
 
 async def height_contours(
-    event_id: str, dt: DateTimeLike, pressure_level: int, client: ClientSession
+    event_id: str, dt: DateTimeLike, pressure_level: Level, client: ClientSession
 ) -> GeoJSON | None:
     cdn_url = os.getenv("ENVIRONMENT_DATA_CDN_URL")
     if not cdn_url:

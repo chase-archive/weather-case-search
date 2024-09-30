@@ -27,6 +27,7 @@ def height_contours(
             and CONFIGS[req.level].height_contours is not None
         ):
             # calculate height from geopotential
+            # TODO: handle level = 'sfc'
             da = ds.sel(level=req.level, time=req.timestamp).Z / 9.8065
             da = _process_ds(da)
 

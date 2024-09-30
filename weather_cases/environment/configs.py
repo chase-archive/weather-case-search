@@ -1,20 +1,21 @@
 from dataclasses import dataclass
 import os
+from typing import Dict
 import numpy as np
 import pandas as pd
 
 from weather_cases.environment.contours import get_contour_calc
-from weather_cases.environment.types import ContourSpec
+from weather_cases.environment.types import ContourSpec, Level
 
 
 @dataclass
 class Configs:
-    level: int
+    level: Level
     height_contours: ContourSpec
     isotachs: ContourSpec
 
 
-CONFIGS = {
+CONFIGS: Dict[Level, Configs] = {
     500: Configs(
         level=500,
         height_contours=get_contour_calc(include=5800, delta=60),
@@ -27,7 +28,7 @@ CONFIGS = {
 class EventDataRequest:
     event_id: str
     timestamp: pd.Timestamp
-    level: int
+    level: Level
 
     def to_s3_folder(self) -> str:
         return f"{self.event_id}/{self.timestamp:%Y-%m-%d}/{self.timestamp:%H}/{self.level}"

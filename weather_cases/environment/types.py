@@ -11,6 +11,12 @@ type DateTimeLike = Union[str, pd.Timestamp, datetime.datetime, datetime.date]
 
 type Level = int | Literal["sfc"]
 
-type ContourSpec = Iterable[int] | Callable[[xr.DataArray], Iterable[float]] | None
+type ContourSpec = Iterable[int] | ContourCalculation | None
+
+type ContourCalculation = Callable[[xr.DataArray], Iterable[float]]
 
 type XArrayData = xr.Dataset | xr.DataArray
+
+type OutputVar = Literal[
+    "heights", "temperatures", "omega", "vorticity", "rh", "barbs", "isotachs"
+]
