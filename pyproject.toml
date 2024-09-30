@@ -26,6 +26,9 @@ aiohttp = {version = "^3.10.5", extras = ["speedups"]}
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
 
+[tool.poetry.scripts]
+load = "weather_cases.environment.run:load_environments"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

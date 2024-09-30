@@ -31,7 +31,7 @@ def event_available_data(event_id: str) -> list[EnvironmentDataOverview]:
     except KeyError:
         return []
     start_dt, end_dt = find_datetime_range(pd.Timestamp(event_dt))
-    event_dts = pd.date_range(start_dt, end_dt, freq="3H")
+    event_dts = pd.date_range(start_dt, end_dt, freq="3h")
 
     return get_available_vars(event_id, event_dts)
 
