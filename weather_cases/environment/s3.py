@@ -23,6 +23,11 @@ S3_FILE_SYSTEM = s3fs.S3FileSystem(
 )
 
 
+def exists(data_request: EventDataRequest, kind: str, datatype: str) -> bool:
+    s3_path = data_request.full_s3_location_path(kind, datatype)
+    return S3_FILE_SYSTEM.exists(s3_path)
+
+
 def save_geojson(
     data_request: EventDataRequest, kind: str, data: geojson.GeoJSON
 ) -> None:

@@ -1,7 +1,6 @@
 from typing import Iterable
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 import xarray as xr
 from geojson import GeoJSON
 
