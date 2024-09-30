@@ -9,7 +9,7 @@ import xarray as xr
 from dotenv import load_dotenv
 
 from weather_cases.environment.configs import EventDataRequest
-from weather_cases.environment.exceptions import DataNotFoundException
+from weather_cases.exceptions import DataNotFoundException
 from weather_cases.environment.types import XArrayData
 
 

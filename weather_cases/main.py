@@ -3,10 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 
-from weather_cases.environment.exceptions import DataNotFoundException
+from weather_cases.exceptions import DataNotFoundException
 from weather_cases.lifespan import lifespan
-from weather_cases.routes import router as cases_router
-from weather_cases.environment.routes import router as environment_router
+from weather_cases.router import router as cases_router
+from weather_cases.environment.router import router as environment_router
 
 app = FastAPI(lifespan=lifespan)
 
