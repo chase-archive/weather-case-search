@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 from weather_cases.environment.contours import get_contour_calc
-from weather_cases.environment.types import ContourSpec, Level
+from weather_cases.environment.types import ContourSpec, Level, OutputVar
 
 
 @dataclass
@@ -55,7 +55,23 @@ CONFIGS: Dict[Level, Configs] = {
 }
 
 
-@dataclass
+@dataclass(frozen=True)
+class EventDataOutput:
+    output_var: OutputVar
+    filename: str
+    filetype: str
+
+
+OUTPUTS: Dict[OutputVar, EventDataOutput] = {
+    "height": EventDataOutput("height", "heights", "geojson.gz"),
+    "isotachs": EventDataOutput("isotachs", "wind", "zarr"),
+    "barbs": EventDataOutput("barbs", "wind", "zarr"),
+    "temperature": EventDataOutput("temperature", "temps", "geojson.gz"),
+    "dewpoint": EventDataOutput("dewpoint", "dewpts", "geojson.gz"),
+}
+
+
+@dataclass(frozen=True)
 class EventDataRequest:
     event_id: str
     timestamp: pd.Timestamp

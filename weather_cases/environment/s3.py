@@ -57,13 +57,13 @@ def save_dataset(
     data.to_zarr(store=store, mode="w", consolidated=True)
 
 
-def read_dataset(data_request: EventDataRequest, kind: str) -> xr.Dataset:
+def read_dataset(data_request: EventDataRequest, kind: str) -> xr.Dataset | None:
     try:
         s3_path = data_request.full_s3_location_path(kind, "zarr")
         store = s3fs.S3Map(root=s3_path, s3=S3_FILE_SYSTEM, check=False)
         return xr.open_zarr(store, chunks=None)  # type: ignore
     except FileNotFoundError:
-        raise DataNotFoundException("Data not found")
+        return None
 
 
 def _write_s3_obj(key: str, data: bytes) -> None:

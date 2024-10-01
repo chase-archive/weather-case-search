@@ -1,13 +1,15 @@
+from typing import Dict
+import aiohttp
 import asyncio
 from datetime import datetime
-import aiohttp
+from geojson import GeoJSON
 from fastapi import APIRouter, HTTPException
 
 from weather_cases.environment import retrieve
 from weather_cases.environment.configs import CONFIGS
 from weather_cases.environment.models import EnvironmentData, EnvironmentDataOverview
 from weather_cases.environment.overview import event_available_data
-from weather_cases.environment.types import Level
+from weather_cases.environment.types import Level, OutputVar
 
 
 router = APIRouter(prefix="/environment", tags=["environment"])
@@ -40,11 +42,12 @@ async def retrieve_environment(
         wind = results[1]
         isotachs, wind_vectors = wind
 
+        data: Dict[OutputVar, GeoJSON | None] = {
+            "height": heights,
+            "isotachs": isotachs,
+            "barbs": wind_vectors,
+        }
+
         return EnvironmentData(
-            event_id=event_id,
-            timestamp=timestamp,
-            level=level,
-            height_contours=heights,
-            isotachs=isotachs,
-            wind_vectors=wind_vectors,
+            event_id=event_id, timestamp=timestamp, level=level, data=data
         )

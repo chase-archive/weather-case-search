@@ -12,9 +12,7 @@ class EnvironmentData(BaseModel):
     timestamp: datetime
     level: Level
     # TODO: These should be GeoJSON, but that breaks OpenAPI docs
-    height_contours: Any | None
-    isotachs: Any | None
-    wind_vectors: Any | None
+    data: Dict[OutputVar, Any | None]
 
 
 class EnvironmentDataOverview(BaseModel):

@@ -23,9 +23,12 @@ load_dotenv()
 
 async def wind_plots(
     event_id: str, dt: DateTimeLike, pressure_level: Level
-) -> tuple[GeoJSON, GeoJSON]:
+) -> tuple[GeoJSON | None, GeoJSON | None]:
     data_request = EventDataRequest(event_id, pd.Timestamp(dt), pressure_level)
     ds = read_dataset(data_request, "wind")
+
+    if ds is None:
+        return None, None
 
     u, v = ds.U, ds.V
     # eager load to avoid network round-trips, we will be using all coordinates

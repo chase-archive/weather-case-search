@@ -1,7 +1,7 @@
 from collections.abc import Iterable
 import pandas as pd
 
-from weather_cases.environment.configs import EventDataRequest
+from weather_cases.environment.configs import OUTPUTS, EventDataRequest
 from weather_cases.environment.models import EnvironmentDataOverview
 from weather_cases.environment.s3 import keys
 from weather_cases.environment.types import Level, OutputVar
@@ -53,12 +53,9 @@ def get_available_vars(
             outputs_for_level = []
             req = EventDataRequest(event_id, timestamp, level)
 
-            if req.full_s3_location_path("heights", "geojson.gz") in items:
-                outputs_for_level.append("height")
-
-            if req.full_s3_location_path("wind", "zarr") in items:
-                outputs_for_level.append("barbs")
-                outputs_for_level.append("isotachs")
+            for output_var, output in OUTPUTS.items():
+                if req.full_s3_location_path(output.filename, output.filetype) in items:
+                    outputs_for_level.append(output_var)
 
             outputs[level] = outputs_for_level
 
