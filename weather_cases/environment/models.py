@@ -1,25 +1,24 @@
 from datetime import datetime
-from pydantic import BaseModel
-from geojson import GeoJSON
+from typing import Any, Dict
+from pydantic import BaseModel, ConfigDict
 
 from weather_cases.environment.types import Level, OutputVar
 
 
 class EnvironmentData(BaseModel):
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     event_id: str
     timestamp: datetime
     level: Level
-    height_contours: GeoJSON | None
-    isotachs: GeoJSON | None
-    wind_vectors: GeoJSON | None
+    # TODO: These should be GeoJSON, but that breaks OpenAPI docs
+    height_contours: Any | None
+    isotachs: Any | None
+    wind_vectors: Any | None
 
 
 class EnvironmentDataOverview(BaseModel):
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     timestamp: datetime
-    available_data: dict[Level, list[OutputVar]]
+    available_data: Dict[Level, list[OutputVar]]
