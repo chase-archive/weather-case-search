@@ -16,6 +16,10 @@ class WeatherCaseRegistry:
     def items(self):
         return self._items
 
+    @property
+    def dataframe(self):
+        return self._items_df.copy()
+
     @items.setter
     def items(self, df: pd.DataFrame):
         searchable_items = {

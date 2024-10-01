@@ -11,7 +11,23 @@ pandas = "^2.2.2"
 fastapi = "^0.112.0"
 thefuzz = "^0.22.1"
 uvicorn = {version = "^0.30.5", extras = ["standard"]}
+xarray = "^2024.7.0"
+pydap = "^3.5"
+matplotlib = "^3.9.2"
+geojson = "^3.1.0"
+cftime = "^1.6.4"
+python-dotenv = "^1.0.1"
+fsspec = "^2024.9.0"
+s3fs = {version = "^2024.9.0", extras = ["boto3"]}
+zarr = "^2.18.3"
+aiohttp = {version = "^3.10.5", extras = ["speedups"]}
 
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.3"
+
+[tool.poetry.scripts]
+load = "weather_cases.environment.run:load_environments"
 
 [build-system]
 requires = ["poetry-core"]
