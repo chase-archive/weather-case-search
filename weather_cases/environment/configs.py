@@ -11,35 +11,46 @@ from weather_cases.environment.types import ContourSpec, Level
 @dataclass
 class Configs:
     level: Level
-    height_contours: ContourSpec
-    isotachs: ContourSpec
+    height: ContourSpec = None
+    isotachs: ContourSpec = None
+    temps: ContourSpec = None
+    dewpts: ContourSpec = None
+    mslp: ContourSpec = None
 
 
 CONFIGS: Dict[Level, Configs] = {
     200: Configs(
         level=200,
-        height_contours=get_contour_calc(include=12000, delta=60),
+        height=get_contour_calc(include=12000, delta=60),
         isotachs=np.arange(50, 171, 2),
     ),
     300: Configs(
         level=300,
-        height_contours=get_contour_calc(include=9000, delta=60),
+        height=get_contour_calc(include=9000, delta=60),
         isotachs=np.arange(50, 171, 2),
     ),
     500: Configs(
         level=500,
-        height_contours=get_contour_calc(include=5800, delta=60),
+        height=get_contour_calc(include=5800, delta=60),
         isotachs=np.arange(20, 141, 2),
     ),
     700: Configs(
         level=700,
-        height_contours=get_contour_calc(include=3000, delta=30),
+        height=get_contour_calc(include=3000, delta=30),
         isotachs=np.arange(20, 81, 2),
+        temps=np.arange(-40, 31, 2),
     ),
     850: Configs(
         level=850,
-        height_contours=get_contour_calc(include=1500, delta=30),
+        height=get_contour_calc(include=1500, delta=30),
         isotachs=np.arange(20, 81, 2),
+        temps=np.arange(-40, 41, 2),
+    ),
+    "sfc": Configs(
+        level="sfc",
+        mslp=get_contour_calc(include=1000, delta=2),
+        dewpts=np.arange(-40, 90, 1),
+        isotachs=np.arange(10, 60, 1),
     ),
 }
 

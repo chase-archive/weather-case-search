@@ -18,5 +18,12 @@ type ContourCalculation = Callable[[xr.DataArray], Iterable[float]]
 type XArrayData = xr.Dataset | xr.DataArray
 
 type OutputVar = Literal[
-    "heights", "temperatures", "omega", "vorticity", "rh", "barbs", "isotachs"
+    "height",
+    "temperature",
+    "dewpoint",
+    "vorticity",
+    "rh",
+    "barbs",
+    "isotachs",
+    "mslp",
 ]

@@ -54,7 +54,7 @@ def get_available_vars(
             req = EventDataRequest(event_id, timestamp, level)
 
             if req.full_s3_location_path("heights", "geojson.gz") in items:
-                outputs_for_level.append("heights")
+                outputs_for_level.append("height")
 
             if req.full_s3_location_path("wind", "zarr") in items:
                 outputs_for_level.append("barbs")
