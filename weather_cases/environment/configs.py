@@ -49,8 +49,8 @@ CONFIGS: Dict[Level, Configs] = {
     "sfc": Configs(
         level="sfc",
         mslp=get_contour_calc(include=1000, delta=2),
-        dewpts=np.arange(-40, 90, 1),
-        isotachs=np.arange(10, 60, 1),
+        dewpts=np.arange(-40, 90, 1),  # degrees F
+        isotachs=np.arange(10, 61, 1),
     ),
 }
 
@@ -66,8 +66,9 @@ OUTPUTS: Dict[OutputVar, EventDataOutput] = {
     "height": EventDataOutput("height", "heights", "geojson.gz"),
     "isotachs": EventDataOutput("isotachs", "wind", "zarr"),
     "barbs": EventDataOutput("barbs", "wind", "zarr"),
-    "temperature": EventDataOutput("temperature", "temps", "geojson.gz"),
-    "dewpoint": EventDataOutput("dewpoint", "dewpts", "geojson.gz"),
+    "temperature": EventDataOutput("temperature", "temps", "zarr"),
+    "dewpoint": EventDataOutput("dewpoint", "dewpts", "zarr"),
+    "mslp": EventDataOutput("mslp", "mslp", "geojson.gz"),
 }
 
 
