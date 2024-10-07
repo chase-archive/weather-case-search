@@ -79,7 +79,7 @@ class EventDataRequest:
     level: Level
 
     def to_s3_folder(self) -> str:
-        return f"{self.event_id}/{self.timestamp:%Y-%m-%d}/{self.timestamp:%H}/{self.level}"
+        return f"v2/{self.event_id}/{self.timestamp:%Y-%m-%d}/{self.timestamp:%H}/{self.level}"
 
     def to_s3_location(self, kind: str, filetype: str) -> str:
         return f"{self.to_s3_folder()}/{kind}.{filetype}"

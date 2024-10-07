@@ -1,15 +1,11 @@
-from typing import Dict
-import aiohttp
-import asyncio
 from datetime import datetime
-from geojson import GeoJSON
 from fastapi import APIRouter, HTTPException
 
 from weather_cases.environment import retrieve
 from weather_cases.environment.configs import CONFIGS
 from weather_cases.environment.models import EnvironmentData, EnvironmentDataOverview
 from weather_cases.environment.overview import event_available_data
-from weather_cases.environment.types import Level, OutputVar
+from weather_cases.environment.types import Level
 
 
 router = APIRouter(prefix="/environment", tags=["environment"])
@@ -26,28 +22,14 @@ def retrieve_environment_overview(event_id: str) -> list[EnvironmentDataOverview
 
 
 @router.get("/data/{event_id}/{timestamp}/{level}")
-async def retrieve_environment(
+def retrieve_environment(
     event_id: str,
     timestamp: datetime,
     level: Level,
 ) -> EnvironmentData:
     _check_level(level)
+    data = retrieve.environment_plots(event_id, timestamp, level)
 
-    async with aiohttp.ClientSession() as http_client:
-        results = await asyncio.gather(
-            retrieve.height_contours(event_id, timestamp, level, http_client),
-            retrieve.wind_plots(event_id, timestamp, level),
-        )
-        heights = results[0]
-        wind = results[1]
-        isotachs, wind_vectors = wind
-
-        data: Dict[OutputVar, GeoJSON | None] = {
-            "height": heights,
-            "isotachs": isotachs,
-            "barbs": wind_vectors,
-        }
-
-        return EnvironmentData(
-            event_id=event_id, timestamp=timestamp, level=level, data=data
-        )
+    return EnvironmentData(
+        event_id=event_id, timestamp=timestamp, level=level, data=data
+    )

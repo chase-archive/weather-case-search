@@ -23,28 +23,14 @@ def load_environments(limit: int | None = None) -> None:
         analysis_dts = pd.date_range(*find_datetime_range(event_dt), freq="3h")
         levels = (200, 300, 500, 700, 850)
 
-        data_requests = [
+        data_requests = (
             EventDataRequest(event_id, dt, level)
             for dt, level in product(analysis_dts, levels)
-        ]
-        reqs_by_output = {}
-        for output_var, output in OUTPUTS.items():
-            reqs_by_output[output_var] = [
-                req
-                for req in data_requests
-                if not exists(req, output.filename, output.filetype)
-            ]
+        )
 
-        for req, hght_field in generate.height_contours(
-            extent, reqs_by_output["height"]
-        ):
-            save_geojson(req, OUTPUTS["height"].filename, hght_field)
-            print(f"Processed heights {req.level} hPa at {req.timestamp}")
-
-        all_wind_reqs = set(reqs_by_output["isotachs"] + reqs_by_output["barbs"])
-        for req, wind in generate.wind_data(extent, all_wind_reqs):
-            save_dataset(req, OUTPUTS["barbs"].filename, wind)
-            print(f"Processed wind {req.level} hPa at {req.timestamp}")
+        for req, ds in generate.complete_datasets(extent, data_requests):
+            save_dataset(req, "all_data", ds)
+            print(f"Processed zarr {req.level} hPa at {req.timestamp}")
 
 
 if __name__ == "__main__":

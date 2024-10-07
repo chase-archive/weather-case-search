@@ -1,43 +1,49 @@
 from typing import Iterable
-import matplotlib.pyplot as plt
-import numpy as np
 import xarray as xr
-from geojson import GeoJSON
 
 from weather_cases.environment.configs import CONFIGS, EventDataRequest
-from weather_cases.environment.contours import get_contours
 from weather_cases.environment.era5_rda import (
     CODES_PL,
     CODES_SFC,
     open_era5_pl_dataset,
     open_era5_sfc_dataset,
 )
-from weather_cases.environment.geojsons import contour_linestrings
-
 from weather_cases.environment.types import Extent, XArrayData
 
 
-def height_contours(
+def complete_datasets(
     extent: Extent, data_requests: Iterable[EventDataRequest]
-) -> Iterable[tuple[EventDataRequest, GeoJSON]]:
+) -> Iterable[tuple[EventDataRequest, xr.Dataset]]:
+    data_requests = set(data_requests)
+    height_dsets = dict(height_data(extent, data_requests))
+    wind_dsets = dict(wind_data(extent, data_requests))
+
+    for req in data_requests:
+        datasets_for_req = []
+        if height_dsets.get(req, None):
+            datasets_for_req.append(height_dsets[req])
+        if wind_dsets.get(req, None):
+            datasets_for_req.append(wind_dsets[req])
+
+        yield req, xr.merge(datasets_for_req, compat="override")
+
+
+def height_data(
+    extent: Extent, data_requests: Iterable[EventDataRequest]
+) -> Iterable[tuple[EventDataRequest, xr.Dataset]]:
     data_requests = [req for req in data_requests if req.level != "sfc"]
     unique_dates = set(req.timestamp.date() for req in data_requests)
-    date_datasets = {
+    pl_datasets = {
         d: open_era5_pl_dataset(d, CODES_PL["height"], subset=extent)
         for d in unique_dates
     }
-
     for req in data_requests:
-        ds = date_datasets[req.timestamp.date()]
+        ds = pl_datasets[req.timestamp.date()]
         if CONFIGS.get(req.level, None) and CONFIGS[req.level].height is not None:
             # calculate height from geopotential
-            da = ds.sel(level=req.level, time=req.timestamp).Z / 9.8065
-            da = _process_ds(da)
-
-            x, y = np.meshgrid(da.longitude, da.latitude)
-            contour_levels = get_contours(CONFIGS[req.level].height, da)  # type: ignore
-            CS = plt.contour(x, y, da, levels=contour_levels)
-            yield req, contour_linestrings(CS)
+            ds = ds.sel(level=req.level, time=req.timestamp) / 9.8065
+            ds = _process_ds(ds)
+            yield req, ds  # type: ignore
 
 
 def wind_data(
