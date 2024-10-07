@@ -5,6 +5,25 @@ from xarray.backends import PydapDataStore
 
 from weather_cases.environment.types import DateTimeLike, Extent
 
+
+# ARCO-ERA5
+
+def arco_era5_isobaric(
+    subset: Extent | None = None,
+    grid_spacing: float = 0.5,
+    levels: list[int] | None = None,
+) -> xr.Dataset:
+    ds = xr.open_zarr(
+        "gs://gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+        chunks=None,  # type: ignore
+        consolidated=True,
+        storage_options=dict(token="anon"),
+    )
+    return ds.sel(**_get_subset_dict(subset, grid_spacing, levels))
+
+
+# RDA
+
 RDA_THREDDS_BASE = "https://thredds.rda.ucar.edu/thredds/dodsC/files/g/d633000"
 
 CODES_PL = {
@@ -24,7 +43,7 @@ CODES_SFC = {
 }
 
 
-def open_era5_pl_dataset(
+def open_era5_rda_pl_dataset(
     date: DateTimeLike,
     code: str,
     subset: Extent | None = None,
@@ -32,13 +51,13 @@ def open_era5_pl_dataset(
     levels: list[int] | None = None,
 ) -> xr.Dataset:
     date = pd.Timestamp(date)
-    url = generate_rda_pl_url(date, code)
+    url = _generate_rda_pl_url(date, code)
     store = PydapDataStore.open(url, session=None)
     ds = xr.open_dataset(store)
     return ds.sel(**_get_subset_dict(subset, grid_spacing, levels))
 
 
-def open_era5_sfc_dataset(
+def open_era5_rda_sfc_dataset(
     date: DateTimeLike,
     code: str,
     subset: Extent | None = None,
@@ -46,19 +65,19 @@ def open_era5_sfc_dataset(
     levels: list[int] | None = None,
 ) -> xr.Dataset:
     date = pd.Timestamp(date)
-    url = generate_rda_sfc_url(date, code)
+    url = _generate_rda_sfc_url(date, code)
     store = PydapDataStore.open(url, session=None)
     ds = xr.open_dataset(store)
     return ds.sel(**_get_subset_dict(subset, grid_spacing, levels))
 
 
-def generate_rda_pl_url(date: pd.Timestamp, code: str) -> str:
+def _generate_rda_pl_url(date: pd.Timestamp, code: str) -> str:
     base_url = f"{RDA_THREDDS_BASE}/e5.oper.an.pl/"
     file_name = f"e5.oper.an.pl.{code}.{date:%Y%m%d}00_{date:%Y%m%d}23.nc"
     return f"{base_url}{date:%Y%m}/{file_name}"
 
 
-def generate_rda_sfc_url(date: pd.Timestamp, code: str) -> str:
+def _generate_rda_sfc_url(date: pd.Timestamp, code: str) -> str:
     base_url = f"{RDA_THREDDS_BASE}/e5.oper.an.sfc/"
     month_start = date.replace(day=1)
     month_end = month_start + pd.offsets.MonthEnd(0)
