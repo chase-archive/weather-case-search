@@ -18,9 +18,9 @@ def complete_datasets(
     for req in data_requests:
         print(f"Start generate data for {req}")
         datasets_for_req = []
-        if height_dsets.get(req, None):
+        if height_dsets.get(req, None) is not None:
             datasets_for_req.append(height_dsets[req])
-        if wind_dsets.get(req, None):
+        if wind_dsets.get(req, None) is not None:
             datasets_for_req.append(wind_dsets[req])
 
         yield req, xr.merge(datasets_for_req, compat="override")
@@ -30,6 +30,7 @@ def height_data(
     ds_parent: xr.Dataset, data_requests: Iterable[EventDataRequest]
 ) -> Iterable[tuple[EventDataRequest, xr.DataArray]]:
     geopotential = ds_parent.geopotential.rename("Z")
+    geopotential = _select_and_compute(geopotential, data_requests)
 
     for req in data_requests:
         if CONFIGS.get(req.level, None) and CONFIGS[req.level].height is not None:
@@ -46,6 +47,8 @@ def wind_data(
 ) -> Iterable[tuple[EventDataRequest, xr.Dataset]]:
     u_ds = ds_parent["u_component_of_wind"].rename("U")
     v_ds = ds_parent["v_component_of_wind"].rename("V")
+    u_ds = _select_and_compute(u_ds, data_requests)
+    v_ds = _select_and_compute(v_ds, data_requests)
 
     for req in data_requests:
         if CONFIGS.get(req.level, None) and CONFIGS[req.level].isotachs is not None:
@@ -71,3 +74,13 @@ def _process_ds(ds: XArrayData) -> XArrayData:
         ds_processed.coords["longitude"] + 180
     ) % 360 - 180
     return ds_processed.sortby(ds_processed.longitude)
+
+
+def _select_and_compute(
+    ds: XArrayData, data_requests: Iterable[EventDataRequest]
+) -> XArrayData:
+    all_levels = set(req.level for req in data_requests)
+    all_times = set(req.timestamp for req in data_requests)
+
+    ds = ds.sel(level=list(all_levels), time=list(all_times))
+    return ds.compute()

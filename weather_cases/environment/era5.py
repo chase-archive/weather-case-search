@@ -8,6 +8,7 @@ from weather_cases.environment.types import DateTimeLike, Extent
 
 # ARCO-ERA5
 
+
 def arco_era5_isobaric(
     subset: Extent | None = None,
     grid_spacing: float = 0.5,
@@ -15,7 +16,7 @@ def arco_era5_isobaric(
 ) -> xr.Dataset:
     ds = xr.open_zarr(
         "gs://gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
-        chunks=None,  # type: ignore
+        chunks="auto",  # type: ignore
         consolidated=True,
         storage_options=dict(token="anon"),
     )
