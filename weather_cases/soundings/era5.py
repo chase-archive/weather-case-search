@@ -16,6 +16,11 @@ from weather_cases.soundings.utils import nan_to_none, da_reversed
 def era5_sounding(dt: DateTimeLike, lat: float, lon: float):
     if lon < 0:
         lon += 360
+
+    # set the timestamp to the beginning of the hour
+    # to avoid interpolation issues at 23:XX UTC
+    dt = pd.Timestamp(dt).replace(minute=0)
+
     with warnings.catch_warnings(action="ignore"):
         # upper air data
         ds_hgt = open_era5_pl_dataset(dt, CODES_PL["height"], grid_spacing=0.25)
