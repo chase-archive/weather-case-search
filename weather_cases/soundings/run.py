@@ -1,9 +1,17 @@
+import argparse
 import json
 import os
-from pathlib import Path
 from weather_cases.io import read_all_cases
 from weather_cases.soundings.era5 import era5_sounding
 from weather_cases.soundings.models import Profile
+
+
+def entrypoint():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("from_idx", type=int)
+    parser.add_argument("to_idx", type=int)
+    args = parser.parse_args()
+    load_soundings(args.from_idx, args.to_idx)
 
 
 def load_soundings(from_idx: int, to_idx: int):
@@ -17,10 +25,12 @@ def load_soundings(from_idx: int, to_idx: int):
         lon = case["lon"]
         print(f"Processing case {event_id} from {event_dt} in {country}")
 
-        sounding = era5_sounding(event_dt, lat, lon)
-
         loc = _get_output_loc(event_id)
-        if loc:
+        if not loc:
+            print(f"Skipping {event_id} as it already exists")
+        else:
+            print(f"Saving {event_id} to {loc}")
+            sounding = era5_sounding(event_dt, lat, lon)
             with open(loc, "w") as f:
                 json.dump(_to_dict(sounding), f)
 
@@ -35,9 +45,9 @@ def _to_dict(sounding: Profile) -> dict:
 
 
 def _get_output_loc(name: str) -> str | bool:
-    parent = Path(__name__).parents[1].absolute()
-    outputloc = os.path.join(parent, "data", "soundings", name)
+    current_dir = os.path.dirname(os.path.abspath(__name__))
+    output_loc = os.path.join(current_dir, "data", "soundings", f"{name}.json")
 
-    if os.path.exists(outputloc):
+    if os.path.exists(output_loc):
         return False
-    return outputloc
+    return output_loc

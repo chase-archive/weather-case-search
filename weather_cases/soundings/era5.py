@@ -1,4 +1,5 @@
 import warnings
+import numpy as np
 import pandas as pd
 from weather_cases.environment.era5_rda import (
     CODES_PL,
@@ -65,9 +66,11 @@ def era5_sounding(dt: DateTimeLike, lat: float, lon: float):
         ds_ua_temp = ds_temp.T.interp(latitude=lat, longitude=lon, time=dt) - 273.15
         ua_temp = da_reversed(ds_ua_temp[ds_ua_temp.level < sfc_p])
 
-        # RH is % but MetPy expects a fraction
-        ds_ua_rh = ds_rh.R.interp(latitude=lat, longitude=lon, time=dt) / 100
-        ds_ua_dwpt = mp.dewpoint_from_relative_humidity(ds_ua_temp, ds_ua_rh)
+        # RH is % but MetPy expects a decimal
+        ds_ua_rh = np.clip(
+            ds_rh.R.interp(latitude=lat, longitude=lon, time=dt) / 100, a_min=0, a_max=1
+        )
+        ds_ua_dwpt = mp.dewpoint_from_relative_humidity(ds_ua_temp, ds_ua_rh) - 273.15  # type: ignore
         ua_dwpt = da_reversed(ds_ua_dwpt[ds_ua_dwpt.level < sfc_p])  # type: ignore
 
         ds_ua_u = ds_u.U.interp(latitude=lat, longitude=lon, time=dt) * 1.94384

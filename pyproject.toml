@@ -28,6 +28,7 @@ pytest = "^8.3.3"
 
 [tool.poetry.scripts]
 load = "weather_cases.environment.run:load_environments"
+load_soundings = "weather_cases.soundings.run:entrypoint"
 
 [build-system]
 requires = ["poetry-core"]
