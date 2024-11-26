@@ -7,6 +7,7 @@ from weather_cases.exceptions import DataNotFoundException
 from weather_cases.lifespan import lifespan
 from weather_cases.router import router as cases_router
 from weather_cases.environment.router import router as environment_router
+from weather_cases.soundings.router import router as soundings_router
 
 app = FastAPI(lifespan=lifespan)
 
@@ -31,3 +32,4 @@ async def data_not_found_handler(request: Request, exc: DataNotFoundException):
 
 app.include_router(cases_router)
 app.include_router(environment_router)
+app.include_router(soundings_router)
