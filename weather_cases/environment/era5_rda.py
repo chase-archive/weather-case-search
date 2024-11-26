@@ -13,10 +13,12 @@ CODES_PL = {
     "u": "128_131_u.ll025uv",
     "v": "128_132_v.ll025uv",
     "vorticity": "128_138_vo.ll025sc",
+    "rh": "128_157_r.ll025sc",
 }
 
 CODES_SFC = {
     "mslp": "128_151_msl.ll025sc",
+    "sfcp": "128_134_sp.ll025sc",
     "temperature": "128_167_2t.ll025sc",
     "dewpoint": "128_168_2d.ll025sc",
     "u": "128_165_10u.ll025sc",
@@ -67,7 +69,9 @@ def generate_rda_sfc_url(date: pd.Timestamp, code: str) -> str:
 
 
 def _get_subset_dict(
-    subset: Extent | None, grid_spacing: float, levels: list[int] | None
+    subset: Extent | None,
+    grid_spacing: float,
+    levels: list[int] | None,
 ):
     subset_dict = {}
     if subset:
