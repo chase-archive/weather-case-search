@@ -106,5 +106,6 @@ def era5_sounding(dt: DateTimeLike, lat: float, lon: float):
             lat=lat,
             lon=lon,
             timestamp=pd.Timestamp(dt).to_pydatetime(),
+            source='ERA5',
             data=profile_data,
         )
