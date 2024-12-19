@@ -5,19 +5,20 @@ from datetime import datetime
 
 
 class WeatherCase(BaseModel):
-    class Config:
-        arbitrary_types_allowed = True
-
     id: str
-    timestamp: datetime
-    location: str
+    event_name: str
+    time_start: datetime
+    time_end: Optional[datetime] = Field(default=None)
     country: str
     lat: float
     lon: float
-    mag: Optional[str] = Field(default=None)
-    tags: list[str]
-    outbreak: Optional[str]
-    documentation: list[str]
-    event_summaries: list[str] = Field(default_factory=list)
-    # TODO: this might be rennamed something else to incorporate all the columns
-    notes: Optional[str] = Field(default=None)
+    magnitude: Optional[str] = Field(default=None)
+    tags: list[str] = Field(default_factory=list)
+    features: list[str] = Field(default_factory=list)
+    records: list[str] = Field(default_factory=list)
+    nickname: Optional[str] = Field(default=None)
+    outbreak: Optional[str] = Field(default=None)
+    notes: list[str] = Field(default_factory=list)
+    user_comments: list[str] = Field(default_factory=list)
+    photo_video: list[str] = Field(default_factory=list)
+    account_summary: Optional[str] = Field(default=None)
