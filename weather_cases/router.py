@@ -29,4 +29,4 @@ def get_cases_by_year(year: int) -> list[WeatherCase]:
 
 def _sort_by_score_and_date(item):
     case, score = item
-    return score, case.weather_case.timestamp
+    return score, case.weather_case.time_start

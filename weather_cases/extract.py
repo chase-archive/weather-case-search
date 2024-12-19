@@ -7,27 +7,25 @@ from weather_cases.geog import get_state
 
 
 def to_hash(row: pd.Series) -> str:
-    dt = row["DateTime"]
-    lat = row["lat"]
-    lon = row["lon"]
-    summary = f'{dt.isoformat()}_{'%.2f' % round(float(lat), 2)}_{'%.2f' % round(float(lon), 2)}'
+    summary = f"{row.event_name}_{row.time_start.date().isoformat()}"
     return hashlib.md5(summary.encode()).hexdigest()
 
 
 def to_weather_case(row: pd.Series) -> WeatherCase:
+    row_dict = row.to_dict()
+    comma_sep_attrs = dict(
+        tags=_to_list(row, "tags"),
+        features=_to_list(row, "features"),
+        records=_to_list(row, "records"),
+        notes=_to_list(row, "notes"),
+        user_comments=_to_list(row, "user_comments"),
+        photo_video=_to_list(row, "photo_video"),
+    )
+    row_dict.update(comma_sep_attrs)
+
     return WeatherCase(
+        **row_dict,
         id=to_hash(row),
-        timestamp=row["DateTime"].to_pydatetime(),
-        location=row["Location"],
-        country=row["Country"],
-        lat=float(row["lat"]),
-        lon=float(row["lon"]),
-        tags=to_list(row, "Tags"),
-        outbreak=row["Outbreak"],
-        documentation=concat_cols(
-            row, [col for col in row.index if "Documentation" in col]
-        ),
-        notes=row["Notes"],
     )
 
 
@@ -40,7 +38,7 @@ def to_searchable(row: pd.Series) -> dict:
 
 
 def location_attrs(row: pd.Series) -> dict:
-    loc_cell = row["Location"]
+    loc_cell = row["event_name"]
     loc_attrs = re.split(r"[–\-&/]+", loc_cell)
     loc_attrs.append(loc_cell)
 
@@ -58,7 +56,7 @@ def location_attrs(row: pd.Series) -> dict:
 
 def date_attrs(row: pd.Series) -> dict:
     # TODO: convert to local time zone at lat lon - might need an API to do that
-    dt = row["DateTime"]
+    dt = row["time_start"]
     ts_ctrl = pd.Timestamp(dt, tz="utc").tz_convert("America/Chicago")
     return {
         "date_reprs": [
@@ -70,22 +68,11 @@ def date_attrs(row: pd.Series) -> dict:
 
 
 def misc_attrs(row: pd.Series) -> dict:
-    # most of the EF tor information is not entered in the data, 
-    # it takes a little more effort to look that up
-    # hence this will be skipped
-    # ef = row["TOR"]
-
-    # It's hard to distinguish useful vs. not useful notes.
-    # We'll see if a column pops up that makes this useful
-    # notes = row["Notes"]
-
-    outbreak = row["Outbreak"]
+    outbreak = row["outbreak"]
 
     return {
-        "tags": to_list(row, "Tags"),
-        # "ef": ef,
+        "tags": _to_list(row, "tags"),
         "outbreak": outbreak,
-        # "notes": notes,
     }
 
 
@@ -94,7 +81,7 @@ def concat_cols(row: pd.Series, cols: list[str]) -> list[str]:
     return [str(cell) for cell in row_subset if cell and str(cell).strip()]
 
 
-def to_list(row: pd.Series, col: str) -> list[str]:
+def _to_list(row: pd.Series, col: str) -> list[str]:
     elem = row[col]
     if not elem:
         return []

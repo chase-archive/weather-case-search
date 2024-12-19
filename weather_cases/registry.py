@@ -43,7 +43,7 @@ class WeatherCaseRegistry:
         )
 
     def get_by_year(self, year: int):
-        cases_by_year = self._items_df[self._items_df["DateTime"].dt.year == year]
+        cases_by_year = self._items_df[self._items_df["time_start"].dt.year == year]
         return [to_weather_case(row) for _, row in cases_by_year.iterrows()]
 
 
