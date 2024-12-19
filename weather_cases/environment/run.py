@@ -16,8 +16,8 @@ def load_environments(limit: int | None = None) -> None:
             break
 
         event_id = case["id"]
-        event_dt = case["DateTime"]
-        country = case["Country"]
+        event_dt = case["time_start"]
+        country = case["country"]
 
         extent = EXTENTS[country]
         analysis_dts = pd.date_range(*find_datetime_range(event_dt), freq="3h")

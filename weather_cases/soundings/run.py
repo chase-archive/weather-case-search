@@ -19,8 +19,8 @@ def load_soundings(from_idx: int, to_idx: int):
     cases_subset = all_cases.iloc[from_idx:to_idx]
     for _, case in cases_subset.iterrows():
         event_id = case["id"]
-        event_dt = case["DateTime"]
-        country = case["Country"]
+        event_dt = case["time_start"]
+        country = case["country"]
         lat = case["lat"]
         lon = case["lon"]
         print(f"Processing case {event_id} from {event_dt} in {country}")

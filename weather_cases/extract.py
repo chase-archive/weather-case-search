@@ -7,7 +7,7 @@ from weather_cases.geog import get_state
 
 
 def to_hash(row: pd.Series) -> str:
-    summary = f"{row.event_name}_{row.time_start.isoformat()}"
+    summary = f"{row.event_name}_{row.time_start.date().isoformat()}"
     return hashlib.md5(summary.encode()).hexdigest()
 
 
