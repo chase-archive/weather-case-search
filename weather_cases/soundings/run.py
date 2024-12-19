@@ -3,6 +3,7 @@ import json
 import os
 from weather_cases.io import read_all_cases
 from weather_cases.soundings.era5 import era5_sounding
+from weather_cases.soundings.rapruc import rapruc_sounding
 from weather_cases.soundings.models import Profile
 
 
@@ -30,7 +31,14 @@ def load_soundings(from_idx: int, to_idx: int):
             print(f"Skipping {event_id} as it already exists")
         else:
             print(f"Saving {event_id} to {loc}")
-            sounding = era5_sounding(event_dt, lat, lon)
+
+            # try RAP/RUC data first from NCEI, if it can't be found,
+            # exit and search for data via ERA5
+            try:
+                sounding = rapruc_sounding(event_dt, lat, lon)
+            except:
+                sounding = era5_sounding(event_dt, lat, lon)
+
             with open(loc, "w") as f:
                 json.dump(_to_dict(sounding), f)
 
